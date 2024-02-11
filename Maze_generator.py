@@ -1,4 +1,9 @@
-import mmaze
+from pyamaze import maze,COLOR,agent
 
-m = mmaze.generate(width=3, height=3)
-print(m)
+m=maze(5,5)
+m.CreateMaze()
+a=agent(m,footprints=True)
+
+path = 'EENWWSES'
+
+m.run()
