@@ -16,7 +16,7 @@ m.tracePath({a:path})
 #m.run()
 
 # Return a list of the available adjacent cells
-def get_available_directions(maze_map, current_pos, checked_cells):
+def get_available_cells(maze_map, current_pos, checked_cells):
     available_positions = []
     if maze_map[current_pos]['N']:
         new_pos = (current_pos[0]-1, current_pos[1])
@@ -39,18 +39,34 @@ def get_available_directions(maze_map, current_pos, checked_cells):
 def BFS(maze_map, start, goal):
     que = []
     checked_cells = []
+    prev_pos = {}
     current_pos = start
-    que = que + get_available_directions(maze_map, current_pos, checked_cells)
+    que = que + get_available_cells(maze_map, current_pos, checked_cells)
     print(que)
     
-    while((start != goal) and (len(que) > 0)):
+    while((current_pos != goal) and (len(que) > 0)):
         print(current_pos)
         checked_cells.append(current_pos)
-        que = que + get_available_directions(maze_map, current_pos, checked_cells)
+        available_cells = get_available_cells(maze_map, current_pos, checked_cells)
+        que = que + available_cells
+        for cell in available_cells:
+            prev_pos[cell] = current_pos
+        
         current_pos = que[0]
+            
         del que[0]
+    
+    if current_pos == goal:    
+        path = []
+        dummy = current_pos
+        path.append(dummy)
+        while dummy != start:
+            prev = prev_pos[dummy]
+            path.append(prev)
+            dummy = prev
+        
+    return path[::-1]
 
-print(m.maze_map)
-BFS(m.maze_map, start, goal)
+print(BFS(m.maze_map, start, goal))
     
     
