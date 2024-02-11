@@ -13,39 +13,44 @@ path = 'WWNWNNENW'
 path2 = 'WNWNWNNENW'
 m.tracePath({a:path}) 
 
-m.run()
+#m.run()
 
 # Return a list of the available adjacent cells
 def get_available_directions(maze_map, current_pos, checked_cells):
     available_positions = []
     if maze_map[current_pos]['N']:
-        new_pos = (current_pos[0], current_pos[1]-1)
-        if new_pos not in checked_cells:
-            available_positions.append(new_pos)
-    if maze_map[current_pos]['S']:
-        new_pos = (current_pos[0], current_pos[1]+1)
-        if new_pos not in checked_cells:
-            available_positions.append(new_pos)
-    if maze_map[current_pos]['E']:
-        new_pos = (current_pos[0]+1, current_pos[1])
-        if new_pos not in checked_cells:
-            available_positions.append(new_pos)
-    if maze_map[current_pos]['W']:
         new_pos = (current_pos[0]-1, current_pos[1])
         if new_pos not in checked_cells:
             available_positions.append(new_pos)
+    if maze_map[current_pos]['S']:
+        new_pos = (current_pos[0]+1, current_pos[1])
+        if new_pos not in checked_cells:
+            available_positions.append(new_pos)
+    if maze_map[current_pos]['E']:
+        new_pos = (current_pos[0], current_pos[1]+1)
+        if new_pos not in checked_cells:
+            available_positions.append(new_pos)
+    if maze_map[current_pos]['W']:
+        new_pos = (current_pos[0], current_pos[1]-1)
+        if new_pos not in checked_cells:
+            available_positions.append(new_pos)
     return available_positions
-
-print(get_available_directions(m.maze_map, (5,5), []))
 
 def BFS(maze_map, start, goal):
     que = []
     checked_cells = []
     current_pos = start
+    que = que + get_available_directions(maze_map, current_pos, checked_cells)
+    print(que)
     
-    while(start != goal):
+    while((start != goal) and (len(que) > 0)):
+        print(current_pos)
         checked_cells.append(current_pos)
-        get_available_directions(maze_map, current_pos, checked_cells)
-    
+        que = que + get_available_directions(maze_map, current_pos, checked_cells)
+        current_pos = que[0]
+        del que[0]
+
+print(m.maze_map)
+BFS(m.maze_map, start, goal)
     
     
