@@ -1,10 +1,4 @@
-import pymaze
+import mmaze
 
-# Create a maze generator object
-generator = mazegenerator.MazeGenerator()
-
-# Generate a maze with dimensions 10x10
-maze = generator.generate(10, 10)
-
-# Print the maze
-print(maze)
+m = mmaze.generate(width=3, height=3)
+print(m)
