@@ -122,9 +122,7 @@ def get_g(available_cells, current_pos, g_values):
     costs = {}
     for cell in available_cells:
         cost = g_values[current_pos]+1
-        # If the current cell does not already have an associated cost or the new cost is lower: cost = current cell cost+1 
-        if cell not in g_values or cost < g_values[cell]:
-            costs[cell] = cost
+        costs[cell] = cost
     return costs
 
 # Calculate the total cost for each available cell   
@@ -132,9 +130,7 @@ def get_cell_costs(available_cells, g_values, current_costs, goal):
     costs = {}
     for cell in available_cells:
         cost = g_values[cell] + get_heuristic(cell, goal)
-        # If the current cell does not already have an associated cost or the new cost is lower: cost = current cell cost+1 
-        if cell not in current_costs or cost < current_costs[cell]:
-            costs[cell] = cost
+        costs[cell] = cost
     return costs
 
 def get_lowest_cost_cell(cell_costs):
@@ -153,22 +149,18 @@ def A_star(maze_map, start, goal):
     cell_costs[current_pos] = get_heuristic(current_pos, goal)
     
     available_cells = get_available_cells(maze_map, current_pos, checked_cells)
-    g_values = get_g(available_cells, current_pos, g_values)
-    cell_costs = get_cell_costs(available_cells, g_values, cell_costs, goal)
-     
-    print(g_values)
-    print(cell_costs)
-    print(get_lowest_cost_cell(cell_costs))
+    g_values.update(get_g(available_cells, current_pos, g_values))
+    cell_costs.update(get_cell_costs(available_cells, g_values, cell_costs, goal))
     
     # While the goal has not been reached & the que is not empty
-    while((current_pos != goal) and (len(cell_costs) > 0)):
+    while(current_pos != goal):
         # Check neaby available cells
         checked_cells.append(current_pos)
         available_cells = get_available_cells(maze_map, current_pos, checked_cells)
         
         # Calculate heuristics
-        g_values = get_g(available_cells, current_pos, g_values)
-        cell_costs = get_cell_costs(available_cells, g_values, cell_costs, goal)
+        g_values.update(get_g(available_cells, current_pos, g_values))
+        cell_costs.update(get_cell_costs(available_cells, g_values, cell_costs, goal))
         
         # Set previous postions
         for cell in available_cells:
@@ -193,26 +185,33 @@ def A_star(maze_map, start, goal):
     return directions
 
 # Set variables
-size = (8,8)
+size = (30,30)
 goal = (1,1)
-start = (5,5)
+start = (30,30)
 
 # Create maze
 m=maze(size[0],size[1])
-m.CreateMaze(goal[0],goal[1],loopPercent=100,theme="dark")
+m.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark")
 
 # Create maze-solving agents
-BFS_agent=agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
-DFS_agent=agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.red)
-A_sta = A_star(m.maze_map, start, goal)
+BFS_agent = agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
+DFS_agent = agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.red)
+A_star_agent = agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.green)
+
 # Get the paths
 BFS_path = BFS(m.maze_map, start, goal)
 DFS_path = DFS(m.maze_map, start, goal)
-print(BFS(m.maze_map, start, goal))
+A_star_path = A_star(m.maze_map, start, goal)
+
+# Print length of paths
+print("BFS path length:", len(BFS_path))
+print("DFS path length:", len(DFS_path))
+print("A* path length:", len(A_star_path))
 
 # Solve maze
 m.tracePath({BFS_agent:BFS_path}, delay=100)
-m.tracePath({DFS_agent:DFS_path}, delay=100)
+#m.tracePath({DFS_agent:DFS_path}, delay=100)
+m.tracePath({A_star_agent:A_star_path}, delay=100)
 m.run()
     
     
