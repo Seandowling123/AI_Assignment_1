@@ -1,4 +1,5 @@
 from pyamaze import maze, agent, COLOR
+import math
 
 # Converts a path of cells to a string of directions
 def to_directions(path):
@@ -75,6 +76,7 @@ def BFS(maze_map, start, goal):
     directions = to_directions(path_reversed)
     return directions
 
+# Solve the maze with DFS
 def DFS(maze_map, start, goal):
     que = []
     checked_cells = []
@@ -82,6 +84,72 @@ def DFS(maze_map, start, goal):
     current_pos = start
     
     que = que + get_available_cells(maze_map, current_pos, checked_cells)
+    
+    # While the goal has not been reached & the que is not empty
+    while((current_pos != goal) and (len(que) > 0)):
+        # Check neaby available cells
+        checked_cells.append(current_pos)
+        available_cells = get_available_cells(maze_map, current_pos, checked_cells)
+        que = que + available_cells
+        for cell in available_cells:
+            prev_pos[cell] = current_pos
+        
+        # Get next cell from the que
+        current_pos = que[len(que)-1]
+        del que[len(que)-1]
+        
+    # If the goal has been reached, get the path
+    if current_pos == goal:    
+        path = []
+        path.append(current_pos)
+        while current_pos != start:
+            prev = prev_pos[current_pos]
+            path.append(prev)
+            current_pos = prev
+    
+    # Convert the path to a set of directions
+    path_reversed = path[::-1]
+    directions = to_directions(path_reversed)
+    return directions
+
+# Calculates euclidean distance between a cell and the goal
+def get_heuristic(cell, goal):
+    distance = math.sqrt((cell[0] - goal[0])**2 + (cell[1] - goal[1])**2)
+    return distance
+
+# Calculates the g value for each available cell 
+def get_g(available_cells, current_pos, g_values):
+    costs = {}
+    for cell in available_cells:
+        cost = costs[current_pos]+1
+        # If the current cell does not already have an associated cost or the new cost is lower: cost = current cell cost+1 
+        if cell not in g_values or cost < g_values[cell]:
+            costs[cell] = cost
+    return costs
+
+# Calculate the total cost for each available cell   
+def get_cell_costs(available_cells, g_values, current_costs, goal):
+    costs = {}
+    for cell in available_cells:
+        cost = g_values[cell] + get_heuristic(cell, goal)
+        # If the current cell does not already have an associated cost or the new cost is lower: cost = current cell cost+1 
+        if cell not in current_costs or cost < current_costs[cell]:
+            costs[cell] = cost
+    return costs
+
+# Solve the maze with A*
+def A_star(maze_map, start, goal):
+    que = []
+    checked_cells = []
+    prev_pos = {}
+    g_values = {}
+    cell_costs = {}
+    current_pos = start
+    
+    available_cells = get_available_cells(maze_map, current_pos, checked_cells)
+    que = que +available_cells
+    g_values = get_g(available_cells, current_pos, g_values)
+    cell_costs = get_cell_costs(available_cells, g_values, cell_costs, goal)
     
     # While the goal has not been reached & the que is not empty
     while((current_pos != goal) and (len(que) > 0)):
