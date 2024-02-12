@@ -93,8 +93,8 @@ def DFS(maze_map, start, goal):
             prev_pos[cell] = current_pos
         
         # Get next cell from the que
-        current_pos = que[len(que)]
-        del que[len(que)]
+        current_pos = que[len(que)-1]
+        del que[len(que)-1]
         
     # If the goal has been reached, get the path
     if current_pos == goal:    
@@ -110,22 +110,27 @@ def DFS(maze_map, start, goal):
     directions = to_directions(path_reversed)
     return directions
 
-
 # Set variables
 size = (8,8)
 goal = (1,1)
 start = (5,5)
 
-# Create maze & agents
+# Create maze
 m=maze(size[0],size[1])
-m.CreateMaze(goal[0],goal[1],loopPercent=100,theme="light")
+m.CreateMaze(goal[0],goal[1],loopPercent=100,theme="dark")
+
+# Create maze-solving agents
 BFS_agent=agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
 DFS_agent=agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.red)
 
-path = BFS(m.maze_map, start, goal)
+# Get the paths
+BFS_path = BFS(m.maze_map, start, goal)
+DFS_path = DFS(m.maze_map, start, goal)
 print(BFS(m.maze_map, start, goal))
-m.tracePath({BFS_agent:path}) 
 
+# Solve maze
+m.tracePath({BFS_agent:BFS_path}, delay=100)
+m.tracePath({DFS_agent:DFS_path}, delay=100)
 m.run()
     
     
