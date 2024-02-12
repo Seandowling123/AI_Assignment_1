@@ -121,7 +121,7 @@ def get_heuristic(cell, goal):
 def get_g(available_cells, current_pos, g_values):
     costs = {}
     for cell in available_cells:
-        cost = costs[current_pos]+1
+        cost = g_values[current_pos]+1
         # If the current cell does not already have an associated cost or the new cost is lower: cost = current cell cost+1 
         if cell not in g_values or cost < g_values[cell]:
             costs[cell] = cost
@@ -137,32 +137,46 @@ def get_cell_costs(available_cells, g_values, current_costs, goal):
             costs[cell] = cost
     return costs
 
+def get_lowest_cost_cell(cell_costs):
+    # Use the min function with a key argument to get the key associated with the lowest value
+    min_key = min(cell_costs, key=cell_costs.get)
+    return min_key
+
 # Solve the maze with A*
 def A_star(maze_map, start, goal):
-    que = []
     checked_cells = []
     prev_pos = {}
     g_values = {}
     cell_costs = {}
     current_pos = start
+    g_values[current_pos] = 0
+    cell_costs[current_pos] = get_heuristic(current_pos, goal)
     
     available_cells = get_available_cells(maze_map, current_pos, checked_cells)
-    que = que +available_cells
     g_values = get_g(available_cells, current_pos, g_values)
     cell_costs = get_cell_costs(available_cells, g_values, cell_costs, goal)
+     
+    print(g_values)
+    print(cell_costs)
+    print(get_lowest_cost_cell(cell_costs))
     
     # While the goal has not been reached & the que is not empty
-    while((current_pos != goal) and (len(que) > 0)):
+    while((current_pos != goal) and (len(cell_costs) > 0)):
         # Check neaby available cells
         checked_cells.append(current_pos)
         available_cells = get_available_cells(maze_map, current_pos, checked_cells)
-        que = que + available_cells
+        
+        # Calculate heuristics
+        g_values = get_g(available_cells, current_pos, g_values)
+        cell_costs = get_cell_costs(available_cells, g_values, cell_costs, goal)
+        
+        # Set previous postions
         for cell in available_cells:
             prev_pos[cell] = current_pos
         
         # Get next cell from the que
-        current_pos = que[len(que)-1]
-        del que[len(que)-1]
+        current_pos = get_lowest_cost_cell(cell_costs)
+        del cell_costs[current_pos]
         
     # If the goal has been reached, get the path
     if current_pos == goal:    
@@ -190,7 +204,7 @@ m.CreateMaze(goal[0],goal[1],loopPercent=100,theme="dark")
 # Create maze-solving agents
 BFS_agent=agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
 DFS_agent=agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.red)
-
+A_sta = A_star(m.maze_map, start, goal)
 # Get the paths
 BFS_path = BFS(m.maze_map, start, goal)
 DFS_path = DFS(m.maze_map, start, goal)
