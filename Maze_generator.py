@@ -217,11 +217,11 @@ def A_star(maze_map, start, goal):
     return directions, past_cells
 
 # Calculate the value for a cell
-def bellman_eq(current_pos, available_cells, R, Q, discount):
+def bellman_eq(available_cells, R, V, discount):
     Q_values = []
     for cell in available_cells:
-        if cell in Q or R:
-            Q_values.append(R[cell]+discount*Q[cell])
+        if cell in V or R:
+            Q_values.append(R[cell]+discount*V[cell])
             
     return max[Q_values]
 
@@ -230,7 +230,7 @@ def value_iteration(maze_map, start, goal):
     num_iterations = 1
     discount = .9
     R = {}
-    Q = {}
+    V = {}
     que = []
     checked_cells = []
     
@@ -243,6 +243,15 @@ def value_iteration(maze_map, start, goal):
     for i in range(num_iterations):
         # Iterate over all cells
         while(len(checked_cells > len(maze_map))):
+            # Check neaby available cells
+            checked_cells.append(current_pos)
+            available_cells = get_available_cells(maze_map, current_pos, checked_cells)
+            que = que + available_cells
+            
+            # Get next unchecked cell from the que
+            while que[0] in checked_cells:
+                del que[0]
+            current_pos = que[0]
             
     
 
