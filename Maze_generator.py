@@ -5,7 +5,7 @@ import math
 def solve_maze(maze, start, goal, search_func):
     # Define maze-solving agents
     search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
-    solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.green)
+    solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
     
     # Define the paths
     path, search = search_func(maze.maze_map, start, goal)
@@ -278,7 +278,6 @@ def value_iteration(maze_map, start, goal):
             while que[0] in checked_cells:
                 del que[0]
             current_pos = que[0]
-    print(V)
 
 # Set variables
 size = (30,30)
@@ -296,6 +295,6 @@ solve_maze(m, start, goal, A_star)
 
 value_iteration(m.maze_map, start, goal)
 
-#m.run()
+m.run()
     
     
