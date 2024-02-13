@@ -296,7 +296,7 @@ start = (30,30)
 
 # Create maze
 m=maze(size[0],size[1])
-m.CreateMaze(m,goal[0],goal[1],loopPercent=30,theme="dark")
+m.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark")
 
 # Solve the maze with each algorithm
 solve_maze(m, start, goal, BFS)
@@ -307,4 +307,4 @@ value_iteration(m, m.maze_map, start, goal)
 
 m.run()
     
-    
+   
