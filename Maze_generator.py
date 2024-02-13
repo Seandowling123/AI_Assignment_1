@@ -5,7 +5,7 @@ import math
 def solve_maze(maze, start, goal, search_func):
     # Define maze-solving agents
     search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
-    solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
+    solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.green)
     
     # Define the paths
     path, search = search_func(maze.maze_map, start, goal)
@@ -13,7 +13,7 @@ def solve_maze(maze, start, goal, search_func):
     print(f"{search_func.name} path length: {len(path)}")
     
     # Display maze search and solve
-    maze.tracePath({search_agent:search}, delay=1, kill=True)
+    maze.tracePath({search_agent:search}, delay=1, kill=False)
     maze.tracePath({solve_agent:path}, delay=30, kill=True)
 
 # Converts a path of cells to a string of directions
@@ -233,6 +233,15 @@ def A_star(maze_map, start, goal):
     directions = to_directions(path_reversed)
     return directions, past_cells
 
+def show_values(maze, values):
+    cell_agents = []
+    for value in values:
+        cell_agent = agent(maze,value[0],value[1],filled=True,footprints=False,color=COLOR.from_value(values[value]))
+        cell_agents.append(cell_agent)
+        
+    for agent in cell_agents:
+        maze.tracePath({agent:[(0,0)]}, delay=1, kill=False)
+        
 # Calculate the value for a cell
 def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
     Q_values = []
@@ -248,7 +257,7 @@ def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
         Q_values.append(cell_R+discount*cell_V)
     return max(Q_values)
 
-def value_iteration(maze_map, start, goal):
+def value_iteration(maze, maze_map, start, goal):
     # Set variables
     num_iterations = 1
     discount = .9
@@ -278,7 +287,8 @@ def value_iteration(maze_map, start, goal):
             while que[0] in checked_cells:
                 del que[0]
             current_pos = que[0]
-
+    #show_values(maze, V)
+    
 # Set variables
 size = (30,30)
 goal = (1,1)
@@ -286,12 +296,12 @@ start = (30,30)
 
 # Create maze
 m=maze(size[0],size[1])
-m.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark")
+m.CreateMaze(m,goal[0],goal[1],loopPercent=30,theme="dark")
 
 # Solve the maze with each algorithm
 solve_maze(m, start, goal, BFS)
-solve_maze(m, start, goal, DFS)
-solve_maze(m, start, goal, A_star)
+#solve_maze(m, start, goal, DFS)
+#solve_maze(m, start, goal, A_star)
 
 value_iteration(m.maze_map, start, goal)
 
