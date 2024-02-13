@@ -60,9 +60,10 @@ def BFS(maze_map, start, goal):
     que = []
     checked_cells = []
     prev_pos = {}
+    
+    # Initialise variables
     current_pos = start
     past_cells = [current_pos]
-    
     que = que + get_available_cells(maze_map, current_pos, checked_cells)
     
     # While the goal has not been reached & the que is not empty
@@ -102,9 +103,10 @@ def DFS(maze_map, start, goal):
     que = []
     checked_cells = []
     prev_pos = {}
+    
+    # Initialise variables
     current_pos = start
     past_cells = [current_pos]
-    
     que = que + get_available_cells(maze_map, current_pos, checked_cells)
     
     # While the goal has not been reached & the que is not empty
@@ -169,11 +171,12 @@ def A_star(maze_map, start, goal):
     prev_pos = {}
     g_values = {}
     cell_costs = {}
+    
+    # Initialise variables
     current_pos = start
     g_values[current_pos] = 0
     cell_costs[current_pos] = get_heuristic(current_pos, goal)
     past_cells = [current_pos]
-    
     available_cells = get_available_cells(maze_map, current_pos, checked_cells)
     g_values.update(get_g(available_cells, current_pos, g_values))
     cell_costs.update(get_cell_costs(available_cells, g_values, cell_costs, goal))
@@ -213,6 +216,36 @@ def A_star(maze_map, start, goal):
     directions = to_directions(path_reversed)
     return directions, past_cells
 
+# Calculate the value for a cell
+def bellman_eq(current_pos, available_cells, R, Q, discount):
+    Q_values = []
+    for cell in available_cells:
+        if cell in Q or R:
+            Q_values.append(R[cell]+discount*Q[cell])
+            
+    return max[Q_values]
+
+def value_iteration(maze_map, start, goal):
+    # Set variables
+    num_iterations = 1
+    discount = .9
+    R = {}
+    Q = {}
+    que = []
+    checked_cells = []
+    
+    # Initialise variables
+    current_pos = start
+    que = que + get_available_cells(maze_map, current_pos, checked_cells)
+    current_pos = start
+    R[start] = 1
+    
+    for i in range(num_iterations):
+        # Iterate over all cells
+        while(len(checked_cells > len(maze_map))):
+            
+    
+
 # Set variables
 size = (30,30)
 goal = (1,1)
@@ -222,12 +255,7 @@ start = (30,30)
 m=maze(size[0],size[1])
 m.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark")
 
-# Get the paths
-BFS_path, BFS_search = BFS(m.maze_map, start, goal)
-DFS_path, DFS_search = DFS(m.maze_map, start, goal)
-A_star_path, A_star_search = A_star(m.maze_map, start, goal)
-
-# Run maze solvers
+# Solve the maze with each algorithm
 solve_maze(m, start, goal, BFS)
 solve_maze(m, start, goal, DFS)
 solve_maze(m, start, goal, A_star)
