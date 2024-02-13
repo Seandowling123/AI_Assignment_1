@@ -56,12 +56,12 @@ class COLOR(Enum):
     green=('green4','pale green')
     blue=('DeepSkyBlue4','DeepSkyBlue2')
     yellow=('yellow2','yellow2')
+    bg=('red3','gray11')
     
     def from_value(value):
-        hue = (1 - value) * 0.4
+        hue = (value ** .25) * 0.4
         rgb = mcolors.hsv_to_rgb([hue, 1.0, 0.8])
         rgb_scaled = [int(x * 255) for x in rgb]
-        print(rgb_scaled)
         colour_code = rgb_to_colour_code(rgb_scaled)
         return (ColorResult(colour_code))
     
@@ -73,7 +73,7 @@ class agent:
     Or they can be the physical agents (like robots)
     They can have two shapes (square or arrow)
     '''
-    def __init__(self,parentMaze,x=None,y=None,shape='square',goal=None,filled=False,footprints=False,color:COLOR=COLOR.blue):
+    def __init__(self,parentMaze,x=None,y=None,shape='square',goal=None,filled=False,footprints=False,color:COLOR=COLOR.blue,variable_colours=None):
         '''
         parentmaze-->  The maze on which agent is placed.
         x,y-->  Position of the agent i.e. cell inside which agent will be placed

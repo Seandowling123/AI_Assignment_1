@@ -1,6 +1,15 @@
 from pyamaze import maze, agent, COLOR
 from varname.helpers import Wrapper
 import math
+import time
+
+def clear_maze(maze):
+    path = []
+    cell_agent = agent(maze,1,1,filled=True,footprints=True,color=COLOR.bg)
+    for cell in maze.maze_map:
+        path.append(cell)
+    print(path)
+    maze.tracePath({cell_agent:path}, delay=1, kill=False)
 
 def solve_maze(maze, start, goal, search_func):
     # Define maze-solving agents
@@ -14,7 +23,9 @@ def solve_maze(maze, start, goal, search_func):
     
     # Display maze search and solve
     maze.tracePath({search_agent:search}, delay=1, kill=False)
-    maze.tracePath({solve_agent:path}, delay=30, kill=True)
+    #clear_maze(maze)
+    maze.tracePath({solve_agent:path}, delay=15, kill=True)
+    
 
 # Converts a path of cells to a string of directions
 def to_directions(path):
@@ -239,8 +250,8 @@ def show_values(maze, values):
         cell_agent = agent(maze,value[0],value[1],filled=True,footprints=False,color=COLOR.from_value(values[value]))
         cell_agents.append(cell_agent)
         
-    for agent in cell_agents:
-        maze.tracePath({agent:[(0,0)]}, delay=1, kill=False)
+    for cell_agent in cell_agents:
+        maze.tracePath({cell_agent:[(0,0)]}, delay=1, kill=False)
         
 # Calculate the value for a cell
 def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
@@ -287,7 +298,8 @@ def value_iteration(maze, maze_map, start, goal):
             while que[0] in checked_cells:
                 del que[0]
             current_pos = que[0]
-    #show_values(maze, V)
+            
+    show_values(maze, V)
     
 # Set variables
 size = (30,30)
@@ -303,7 +315,7 @@ solve_maze(m, start, goal, BFS)
 #solve_maze(m, start, goal, DFS)
 #solve_maze(m, start, goal, A_star)
 
-value_iteration(m, m.maze_map, start, goal)
+#value_iteration(m, m.maze_map, start, goal)
 
 m.run()
     
