@@ -1,5 +1,20 @@
 from pyamaze import maze, agent, COLOR
+from varname.helpers import Wrapper
 import math
+
+def solve_maze(maze, start, goal, search_func):
+    # Define maze-solving agents
+    search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
+    solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.green)
+    
+    # Define the paths
+    path, search = search_func(maze.maze_map, start, goal)
+    search_func = Wrapper(dict())
+    print(f"{search_func.name} path length: {len(path)}")
+    
+    # Display maze search and solve
+    maze.tracePath({search_agent:search}, delay=1, kill=True)
+    maze.tracePath({solve_agent:path}, delay=30, kill=True)
 
 # Converts a path of cells to a string of directions
 def to_directions(path):
@@ -46,6 +61,7 @@ def BFS(maze_map, start, goal):
     checked_cells = []
     prev_pos = {}
     current_pos = start
+    past_cells = [current_pos]
     
     que = que + get_available_cells(maze_map, current_pos, checked_cells)
     
@@ -58,9 +74,14 @@ def BFS(maze_map, start, goal):
         for cell in available_cells:
             prev_pos[cell] = current_pos
         
-        # Get next cell from the que
+        # Get next unchecked cell from the que
+        while que[0] in checked_cells:
+            del que[0]
         current_pos = que[0]
-        del que[0]
+        past_cells.append(current_pos)
+        
+        if current_pos in checked_cells:
+            print("fuck")
         
     # If the goal has been reached, get the path
     if current_pos == goal:    
@@ -74,7 +95,7 @@ def BFS(maze_map, start, goal):
     # Convert the path to a set of directions
     path_reversed = path[::-1]
     directions = to_directions(path_reversed)
-    return directions
+    return directions, past_cells
 
 # Solve the maze with DFS
 def DFS(maze_map, start, goal):
@@ -82,6 +103,7 @@ def DFS(maze_map, start, goal):
     checked_cells = []
     prev_pos = {}
     current_pos = start
+    past_cells = [current_pos]
     
     que = que + get_available_cells(maze_map, current_pos, checked_cells)
     
@@ -94,9 +116,12 @@ def DFS(maze_map, start, goal):
         for cell in available_cells:
             prev_pos[cell] = current_pos
         
-        # Get next cell from the que
+        # Get next unchecked cell from the que
+        while que[len(que)-1] in checked_cells:
+            del que[len(que)-1]
         current_pos = que[len(que)-1]
         del que[len(que)-1]
+        past_cells.append(current_pos)
         
     # If the goal has been reached, get the path
     if current_pos == goal:    
@@ -110,7 +135,7 @@ def DFS(maze_map, start, goal):
     # Convert the path to a set of directions
     path_reversed = path[::-1]
     directions = to_directions(path_reversed)
-    return directions
+    return directions, past_cells
 
 # Calculates euclidean distance between a cell and the goal
 def get_heuristic(cell, goal):
@@ -147,6 +172,7 @@ def A_star(maze_map, start, goal):
     current_pos = start
     g_values[current_pos] = 0
     cell_costs[current_pos] = get_heuristic(current_pos, goal)
+    past_cells = [current_pos]
     
     available_cells = get_available_cells(maze_map, current_pos, checked_cells)
     g_values.update(get_g(available_cells, current_pos, g_values))
@@ -165,10 +191,13 @@ def A_star(maze_map, start, goal):
         # Set previous postions
         for cell in available_cells:
             prev_pos[cell] = current_pos
-        
-        # Get next cell from the que
+    
+        # Get next unchecked cell from the que
+        while get_lowest_cost_cell(cell_costs) in checked_cells:
+            del cell_costs[get_lowest_cost_cell(cell_costs)]
         current_pos = get_lowest_cost_cell(cell_costs)
         del cell_costs[current_pos]
+        past_cells.append(current_pos)
         
     # If the goal has been reached, get the path
     if current_pos == goal:    
@@ -182,7 +211,7 @@ def A_star(maze_map, start, goal):
     # Convert the path to a set of directions
     path_reversed = path[::-1]
     directions = to_directions(path_reversed)
-    return directions
+    return directions, past_cells
 
 # Set variables
 size = (30,30)
@@ -193,25 +222,16 @@ start = (30,30)
 m=maze(size[0],size[1])
 m.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark")
 
-# Create maze-solving agents
-BFS_agent = agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
-DFS_agent = agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.red)
-A_star_agent = agent(m,start[0],start[1],filled=True,footprints=True,color=COLOR.green)
-
 # Get the paths
-BFS_path = BFS(m.maze_map, start, goal)
-DFS_path = DFS(m.maze_map, start, goal)
-A_star_path = A_star(m.maze_map, start, goal)
+BFS_path, BFS_search = BFS(m.maze_map, start, goal)
+DFS_path, DFS_search = DFS(m.maze_map, start, goal)
+A_star_path, A_star_search = A_star(m.maze_map, start, goal)
 
-# Print length of paths
-print("BFS path length:", len(BFS_path))
-print("DFS path length:", len(DFS_path))
-print("A* path length:", len(A_star_path))
+# Run maze solvers
+solve_maze(m, start, goal, BFS)
+solve_maze(m, start, goal, DFS)
+solve_maze(m, start, goal, A_star)
 
-# Solve maze
-m.tracePath({BFS_agent:BFS_path}, delay=100)
-#m.tracePath({DFS_agent:DFS_path}, delay=100)
-m.tracePath({A_star_agent:A_star_path}, delay=100)
 m.run()
     
     
