@@ -55,6 +55,23 @@ def get_available_cells(maze_map, current_pos, checked_cells):
             available_positions.append(new_pos)
     return available_positions
 
+# Return a list of the adjacent cells
+def get_neighbouring_cells(maze_map, current_pos):
+    available_positions = []
+    if maze_map[current_pos]['N']:
+        new_pos = (current_pos[0]-1, current_pos[1])
+        available_positions.append(new_pos)
+    if maze_map[current_pos]['S']:
+        new_pos = (current_pos[0]+1, current_pos[1])
+        available_positions.append(new_pos)
+    if maze_map[current_pos]['E']:
+        new_pos = (current_pos[0], current_pos[1]+1)
+        available_positions.append(new_pos)
+    if maze_map[current_pos]['W']:
+        new_pos = (current_pos[0], current_pos[1]-1)
+        available_positions.append(new_pos)
+    return available_positions
+
 # Solve the maze with BFS
 def BFS(maze_map, start, goal):
     que = []
@@ -217,13 +234,19 @@ def A_star(maze_map, start, goal):
     return directions, past_cells
 
 # Calculate the value for a cell
-def bellman_eq(available_cells, R, V, discount):
+def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
     Q_values = []
-    for cell in available_cells:
-        if cell in V or R:
-            Q_values.append(R[cell]+discount*V[cell])
-            
-    return max[Q_values]
+    if current_pos in R:
+        cell_R = R[current_pos]
+    else: cell_R = 0
+    
+    # Calculate Bellman eq
+    for cell in neighbouring_cells:
+        cell_V = 0
+        if cell in V:
+            cell_V  = V[cell]
+        Q_values.append(cell_R+discount*cell_V)
+    return max(Q_values)
 
 def value_iteration(maze_map, start, goal):
     # Set variables
@@ -235,25 +258,27 @@ def value_iteration(maze_map, start, goal):
     checked_cells = []
     
     # Initialise variables
-    current_pos = start
+    current_pos = goal
     que = que + get_available_cells(maze_map, current_pos, checked_cells)
-    current_pos = start
-    R[start] = 1
+    R[goal] = 1
     
     for i in range(num_iterations):
+        
         # Iterate over all cells
-        while(len(checked_cells > len(maze_map))):
-            # Check neaby available cells
+        while(len(checked_cells) < len(maze_map)-1):
             checked_cells.append(current_pos)
             available_cells = get_available_cells(maze_map, current_pos, checked_cells)
+            neighbouring_cells = get_neighbouring_cells(maze_map, current_pos)
             que = que + available_cells
+            
+            V[current_pos] = bellman_eq(current_pos, neighbouring_cells, R, V, discount)
+            print(current_pos, V[current_pos])
             
             # Get next unchecked cell from the que
             while que[0] in checked_cells:
                 del que[0]
             current_pos = que[0]
-            
-    
+    print(V)
 
 # Set variables
 size = (30,30)
@@ -269,6 +294,8 @@ solve_maze(m, start, goal, BFS)
 solve_maze(m, start, goal, DFS)
 solve_maze(m, start, goal, A_star)
 
-m.run()
+value_iteration(m.maze_map, start, goal)
+
+#m.run()
     
     
