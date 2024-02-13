@@ -303,7 +303,7 @@ solve_maze(m, start, goal, BFS)
 #solve_maze(m, start, goal, DFS)
 #solve_maze(m, start, goal, A_star)
 
-value_iteration(m.maze_map, start, goal)
+value_iteration(m, m.maze_map, start, goal)
 
 m.run()
     
