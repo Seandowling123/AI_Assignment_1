@@ -1,7 +1,8 @@
 from pyamaze import maze, agent, COLOR
 from varname.helpers import Wrapper
 import math
-import time
+
+# Once maze is generated save it to csv and then reload it for each aglo. Should fix the fucking problems
 
 def clear_maze(maze):
     path = []
