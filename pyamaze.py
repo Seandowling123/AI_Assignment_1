@@ -296,7 +296,7 @@ class textTitle:
         self._var = StringVar()
         self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',12), padx=40)
         self._var.set(f'{self.title} : {self.value}')
-        self.lab.pack(expand = True,side=RIGHT,anchor=NW, relx=0.75, rely=0.5)
+        self.lab.pack(expand = True,side=RIGHT, anchor=E)
             
 class textLabel:
     '''
@@ -323,7 +323,7 @@ class textLabel:
         self._var.set(f'{self.title} : {v}')
     def drawLabel(self):
         self._var = StringVar()
-        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',12), padx=40)
+        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',14), padx=40)
         self._var.set(f'{self.title} : {self.value}')
         self.lab.pack(expand = True,side=LEFT,anchor=NW)
 
