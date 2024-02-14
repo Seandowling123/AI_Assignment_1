@@ -1,16 +1,26 @@
 from pyamaze import maze, agent, COLOR
 from varname.helpers import Wrapper
 import math
+import os
 
 # Once maze is generated save it to csv and then reload it for each aglo. Should fix the fucking problems
 
-def clear_maze(maze):
-    path = []
-    cell_agent = agent(maze,1,1,filled=True,footprints=True,color=COLOR.bg)
-    for cell in maze.maze_map:
-        path.append(cell)
-    print(path)
-    maze.tracePath({cell_agent:path}, delay=1, kill=False)
+# Find the saved maze csv file
+def find_maze_file():
+    files = os.listdir('.')
+    csv_files = [file for file in files if file.endswith('.csv')]
+    if csv_files:
+        return csv_files[0]
+    else:
+        return None
+
+# Delete all maze files. For the end of the program
+def delete_all_maze_files():
+    files = os.listdir('.')
+    csv_files = [file for file in files if file.endswith('.csv')]
+    for csv_file in csv_files:
+        os.remove(csv_file)
+        print(f"Deleted: {csv_file}")
 
 def solve_maze(maze, start, goal, search_func):
     # Define maze-solving agents
@@ -23,8 +33,7 @@ def solve_maze(maze, start, goal, search_func):
     print(f"{search_func.name} path length: {len(path)}")
     
     # Display maze search and solve
-    maze.tracePath({search_agent:search}, delay=1, kill=False)
-    #clear_maze(maze)
+    maze.tracePath({search_agent:search}, delay=1, kill=True)
     maze.tracePath({solve_agent:path}, delay=15, kill=True)
     
 
@@ -271,7 +280,7 @@ def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
 
 def value_iteration(maze, maze_map, start, goal):
     # Set variables
-    num_iterations = 1
+    num_iterations = 5
     discount = .9
     R = {}
     V = {}
@@ -286,19 +295,20 @@ def value_iteration(maze, maze_map, start, goal):
     for i in range(num_iterations):
         
         # Iterate over all cells
-        while(len(checked_cells) < len(maze_map)-1):
+        while(len(checked_cells) < len(maze_map)):
             checked_cells.append(current_pos)
             available_cells = get_available_cells(maze_map, current_pos, checked_cells)
             neighbouring_cells = get_neighbouring_cells(maze_map, current_pos)
             que = que + available_cells
             
             V[current_pos] = bellman_eq(current_pos, neighbouring_cells, R, V, discount)
-            print(current_pos, V[current_pos])
+            #print(current_pos, V[current_pos])
             
             # Get next unchecked cell from the que
-            while que[0] in checked_cells:
-                del que[0]
-            current_pos = que[0]
+            if (len(que) > 1):
+                while que[0] in checked_cells:
+                    del que[0]
+                current_pos = que[0]
             
     show_values(maze, V)
     
@@ -307,17 +317,27 @@ size = (30,30)
 goal = (1,1)
 start = (30,30)
 
-# Create maze
-m=maze(size[0],size[1])
-m.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark")
+# Create maze for the search algorithms
+maze_search=maze(size[0],size[1])
+maze_search.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", saveMaze=True)
+maze_file = find_maze_file()
+
+solve_maze(maze_search, start, goal, BFS)
+maze_search.run()
+
+# Create maze for the MDP algorithms
+maze_MDP=maze(size[0],size[1])
+maze_MDP.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", loadMaze=maze_file)
 
 # Solve the maze with each algorithm
-solve_maze(m, start, goal, BFS)
+
 #solve_maze(m, start, goal, DFS)
 #solve_maze(m, start, goal, A_star)
 
-#value_iteration(m, m.maze_map, start, goal)
+value_iteration(maze_MDP, maze_MDP.maze_map, start, goal)
 
-m.run()
+maze_MDP.run()
+
+delete_all_maze_files()
     
    
