@@ -29,6 +29,7 @@ from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import time
 
 def rgb_to_colour_code(rgb):
     r, g, b = rgb
@@ -267,6 +268,36 @@ class agent:
         if self._parentMaze.maze_map[self.x,self.y]['S']==True:
             self.x=self.x+1
             self.y=self.y
+            
+class textTitle:
+    '''
+    This class is to create Text Label to show different results on the window.
+    '''
+    def __init__(self,parentMaze,title,value):
+        '''
+        parentmaze-->   The maze on which Label will be displayed.
+        title-->        The title of the value to be displayed
+        value-->        The value to be displayed
+        '''
+        self.title=title
+        self._value=value
+        self._parentMaze=parentMaze
+        # self._parentMaze._labels.append(self)
+        self._var=None
+        self.drawLabel()
+    @property
+    def value(self):
+        return self._value
+    @value.setter
+    def value(self,v):
+        self._value=v
+        self._var.set(f'{self.title} : {v}')
+    def drawLabel(self):
+        self._var = StringVar()
+        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',12), padx=40)
+        self._var.set(f'{self.title} : {self.value}')
+        self.lab.pack(expand = True,side=RIGHT,anchor=NW, relx=0.75, rely=0.5)
+            
 class textLabel:
     '''
     This class is to create Text Label to show different results on the window.
@@ -292,7 +323,7 @@ class textLabel:
         self._var.set(f'{self.title} : {v}')
     def drawLabel(self):
         self._var = StringVar()
-        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="white", fg="black",font=('Helvetica bold',12),relief=RIDGE)
+        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',12), padx=40)
         self._var.set(f'{self.title} : {self.value}')
         self.lab.pack(expand = True,side=LEFT,anchor=NW)
 
@@ -747,7 +778,7 @@ class maze:
                 if len(maze._tracePathList)>0:
                     self.tracePath(maze._tracePathList[0][0],kill=maze._tracePathList[0][1],delay=maze._tracePathList[0][2])
             if kill:
-                self._win.after(300, killAgent,a)         
+                self._win.after(750, killAgent,a)         
             return
         # If path is provided as Dictionary
         if(type(p)==dict):
@@ -800,7 +831,7 @@ class maze:
                         self.tracePath(maze._tracePathList[0][0],kill=maze._tracePathList[0][1],delay=maze._tracePathList[0][2])
                 if kill:
                     
-                    self._win.after(300, killAgent,a)         
+                    self._win.after(750, killAgent,a)         
                 return
             if a.shape=='arrow':
                 old=(a.x,a.y)
@@ -854,7 +885,7 @@ class maze:
                     if len(maze._tracePathList)>0:
                         self.tracePath(maze._tracePathList[0][0],kill=maze._tracePathList[0][1],delay=maze._tracePathList[0][2])
                 if kill:                    
-                    self._win.after(300, killAgent,a)  
+                    self._win.after(750, killAgent,a)  
                 return
             if a.shape=='arrow':
                 old=(a.x,a.y)
@@ -906,6 +937,7 @@ class maze:
         if maze._tracePathList[0][0]==d: 
             for a,p in d.items():
                 if a.goal!=(a.x,a.y) and len(p)!=0:
+                    time.sleep(1)
                     self._tracePathSingle(a,p,kill,showMarked,delay)
     def run(self):
         '''

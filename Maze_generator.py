@@ -19,9 +19,8 @@ def delete_all_maze_files():
     csv_files = [file for file in files if file.endswith('.csv')]
     for csv_file in csv_files:
         os.remove(csv_file)
-        print(f"Deleted: {csv_file}")
         
-# Show the maze being solved
+# Display the maze being solved
 def solve_maze(maze, start, goal, search_func):
     # Define maze-solving agents
     search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
@@ -34,9 +33,7 @@ def solve_maze(maze, start, goal, search_func):
     # Display maze search and solve
     if algo_name != "Value Iteration":
         maze.tracePath({search_agent:search}, delay=1, kill=True)
-        time.sleep(1)
     maze.tracePath({solve_agent:path}, delay=15, kill=True)
-    time.sleep(2)
     
 # Converts a path of cells to a string of directions
 def to_directions(path):
@@ -331,6 +328,7 @@ start = (30,30)
 maze_search=maze(size[0],size[1])
 maze_search.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", saveMaze=True)
 maze_file = find_maze_file()
+textLabel(maze_search, "cock", "cock2")
 
 # Solve the maze with each algorithm
 solve_maze(maze_search, start, goal, BFS)
