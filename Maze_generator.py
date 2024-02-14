@@ -1,4 +1,4 @@
-from pyamaze import maze, agent, COLOR
+from pyamaze import maze, agent, COLOR, textLabel
 from varname.helpers import Wrapper
 import math
 import os
@@ -198,8 +198,8 @@ def get_cell_costs(available_cells, g_values, current_costs, goal):
         costs[cell] = cost
     return costs
 
+# Return the cell with the lowest associated cost
 def get_lowest_cost_cell(cell_costs):
-    # Use the min function with a key argument to get the key associated with the lowest value
     min_key = min(cell_costs, key=cell_costs.get)
     return min_key
 
@@ -254,7 +254,7 @@ def A_star(maze_map, start, goal):
     directions = to_directions(path_reversed)
     return directions, past_cells
 
-def show_values(maze, values):
+def show_cell_values(maze, values):
     cell_agents = []
     for value in values:
         cell_agent = agent(maze,value[0],value[1],filled=True,footprints=False,color=COLOR.from_value(values[value]))
@@ -262,6 +262,24 @@ def show_values(maze, values):
         
     for cell_agent in cell_agents:
         maze.tracePath({cell_agent:[(0,0)]}, delay=1, kill=False)
+
+# Return the cell with the highest associated value
+def get_highest_value_cell(cells, V):
+    max_cell = max(zip(cells, V), key=lambda x: x[1])
+    return max_cell[0]        
+        
+def get_value_iteration_path(maze_map, V, start, goal):
+    # Initialise variables
+    current_pos =  start
+    path = []
+    
+    # Travel alomng the path of highest value cells
+    while current_pos != goal:
+        neighbouring_cells = get_neighbouring_cells(maze_map, current_pos)
+        highest_value_cell = get_highest_value_cell(neighbouring_cells, V)
+        current_pos = highest_value_cell
+        path.append(current_pos)
+    return path
         
 # Calculate the value for a cell
 def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
@@ -295,7 +313,7 @@ def value_iteration(maze, maze_map, start, goal):
     for i in range(num_iterations):
         
         # Iterate over all cells
-        while(len(checked_cells) < len(maze_map)):
+        while(len(checked_cells) < len(maze_map) and len(que) > 0):
             checked_cells.append(current_pos)
             available_cells = get_available_cells(maze_map, current_pos, checked_cells)
             neighbouring_cells = get_neighbouring_cells(maze_map, current_pos)
@@ -305,12 +323,15 @@ def value_iteration(maze, maze_map, start, goal):
             #print(current_pos, V[current_pos])
             
             # Get next unchecked cell from the que
-            if (len(que) > 1):
-                while que[0] in checked_cells:
-                    del que[0]
+            while que and que[0] in checked_cells:
+                del que[0]
+            if que:
                 current_pos = que[0]
-            
-    show_values(maze, V)
+                print(que)
+    
+    path = get_value_iteration_path(maze_map, V, start, goal)
+    return path, 0
+    #show_cell_values(maze, V)
     
 # Set variables
 size = (30,30)
@@ -322,18 +343,18 @@ maze_search=maze(size[0],size[1])
 maze_search.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", saveMaze=True)
 maze_file = find_maze_file()
 
-solve_maze(maze_search, start, goal, BFS)
+# Solve the maze with each algorithm
+#solve_maze(maze_search, start, goal, BFS)
+#solve_maze(m, start, goal, DFS)
+#solve_maze(m, start, goal, A_star)
+solve_maze(maze_search, start, goal, value_iteration)
 maze_search.run()
 
 # Create maze for the MDP algorithms
 maze_MDP=maze(size[0],size[1])
 maze_MDP.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", loadMaze=maze_file)
 
-# Solve the maze with each algorithm
-
-#solve_maze(m, start, goal, DFS)
-#solve_maze(m, start, goal, A_star)
-
+#textLabel(maze_MDP, "cock", "cock2")
 value_iteration(maze_MDP, maze_MDP.maze_map, start, goal)
 
 maze_MDP.run()
