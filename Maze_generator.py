@@ -1,9 +1,8 @@
 from pyamaze import maze, agent, COLOR, textLabel
 from varname.helpers import Wrapper
+import time
 import math
 import os
-
-# Once maze is generated save it to csv and then reload it for each aglo. Should fix the fucking problems
 
 # Find the saved maze csv file
 def find_maze_file():
@@ -21,22 +20,24 @@ def delete_all_maze_files():
     for csv_file in csv_files:
         os.remove(csv_file)
         print(f"Deleted: {csv_file}")
-
+        
+# Show the maze being solved
 def solve_maze(maze, start, goal, search_func):
     # Define maze-solving agents
     search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
     solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.green)
     
     # Define the paths
-    path, search = search_func(maze.maze_map, start, goal)
-    search_func = Wrapper(dict())
-    print(f"{search_func.name} path length: {len(path)}")
+    algo_name, path, search = search_func(maze.maze_map, start, goal)
+    print(f"{algo_name} path length: {len(path)}")
     
     # Display maze search and solve
-    maze.tracePath({search_agent:search}, delay=1, kill=True)
+    if algo_name != "Value Iteration":
+        maze.tracePath({search_agent:search}, delay=1, kill=True)
+        time.sleep(1)
     maze.tracePath({solve_agent:path}, delay=15, kill=True)
+    time.sleep(2)
     
-
 # Converts a path of cells to a string of directions
 def to_directions(path):
     directions = ''
@@ -134,7 +135,7 @@ def BFS(maze_map, start, goal):
     # Convert the path to a set of directions
     path_reversed = path[::-1]
     directions = to_directions(path_reversed)
-    return directions, past_cells
+    return "BFS", directions, past_cells
 
 # Solve the maze with DFS
 def DFS(maze_map, start, goal):
@@ -175,7 +176,7 @@ def DFS(maze_map, start, goal):
     # Convert the path to a set of directions
     path_reversed = path[::-1]
     directions = to_directions(path_reversed)
-    return directions, past_cells
+    return "DFS", directions, past_cells
 
 # Calculates euclidean distance between a cell and the goal
 def get_heuristic(cell, goal):
@@ -252,7 +253,7 @@ def A_star(maze_map, start, goal):
     # Convert the path to a set of directions
     path_reversed = path[::-1]
     directions = to_directions(path_reversed)
-    return directions, past_cells
+    return "A*", directions, past_cells
 
 def show_cell_values(maze, values):
     cell_agents = []
@@ -265,16 +266,23 @@ def show_cell_values(maze, values):
 
 # Return the cell with the highest associated value
 def get_highest_value_cell(cells, V):
-    max_cell = max(zip(cells, V), key=lambda x: x[1])
-    return max_cell[0]        
-        
+    max_cell = None
+    max_value = float('-inf')
+    for cell in cells:
+        if V[cell] > max_value:
+            max_value = V[cell]
+            max_cell = cell
+    return max_cell     
+
+# Get the solve the maze from the cell values
 def get_value_iteration_path(maze_map, V, start, goal):
     # Initialise variables
     current_pos =  start
     path = []
-    
-    # Travel alomng the path of highest value cells
+    path.append(current_pos)
+    # Travel along the path of highest value cells
     while current_pos != goal:
+        #print(current_pos)
         neighbouring_cells = get_neighbouring_cells(maze_map, current_pos)
         highest_value_cell = get_highest_value_cell(neighbouring_cells, V)
         current_pos = highest_value_cell
@@ -296,42 +304,23 @@ def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
         Q_values.append(cell_R+discount*cell_V)
     return max(Q_values)
 
-def value_iteration(maze, maze_map, start, goal):
+def value_iteration(maze_map, start, goal):
     # Set variables
-    num_iterations = 5
+    num_iterations = 100
     discount = .9
     R = {}
     V = {}
-    que = []
-    checked_cells = []
-    
-    # Initialise variables
-    current_pos = goal
-    que = que + get_available_cells(maze_map, current_pos, checked_cells)
     R[goal] = 1
     
+    # Calculate the values for each cell in the maze
     for i in range(num_iterations):
-        
-        # Iterate over all cells
-        while(len(checked_cells) < len(maze_map) and len(que) > 0):
-            checked_cells.append(current_pos)
-            available_cells = get_available_cells(maze_map, current_pos, checked_cells)
-            neighbouring_cells = get_neighbouring_cells(maze_map, current_pos)
-            que = que + available_cells
+        for cell in maze_map:
+            neighbouring_cells = get_neighbouring_cells(maze_map, cell)
+            V[cell] = bellman_eq(cell, neighbouring_cells, R, V, discount)
             
-            V[current_pos] = bellman_eq(current_pos, neighbouring_cells, R, V, discount)
-            #print(current_pos, V[current_pos])
-            
-            # Get next unchecked cell from the que
-            while que and que[0] in checked_cells:
-                del que[0]
-            if que:
-                current_pos = que[0]
-                print(que)
-    
     path = get_value_iteration_path(maze_map, V, start, goal)
-    return path, 0
-    #show_cell_values(maze, V)
+    directions = to_directions(path)
+    return "Value Iteration", directions, V
     
 # Set variables
 size = (30,30)
@@ -344,20 +333,21 @@ maze_search.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", saveMaze=Tru
 maze_file = find_maze_file()
 
 # Solve the maze with each algorithm
-#solve_maze(maze_search, start, goal, BFS)
+solve_maze(maze_search, start, goal, BFS)
 #solve_maze(m, start, goal, DFS)
 #solve_maze(m, start, goal, A_star)
 solve_maze(maze_search, start, goal, value_iteration)
 maze_search.run()
 
+
 # Create maze for the MDP algorithms
-maze_MDP=maze(size[0],size[1])
-maze_MDP.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", loadMaze=maze_file)
+#maze_MDP=maze(size[0],size[1])
+#maze_MDP.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", loadMaze=maze_file)
 
 #textLabel(maze_MDP, "cock", "cock2")
-value_iteration(maze_MDP, maze_MDP.maze_map, start, goal)
+#show_cell_values(maze_MDP, V)
 
-maze_MDP.run()
+#maze_MDP.run()
 
 delete_all_maze_files()
     
