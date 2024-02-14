@@ -785,7 +785,7 @@ class maze:
                 if len(maze._tracePathList)>0:
                     self.tracePath(maze._tracePathList[0][0],kill=maze._tracePathList[0][1],delay=maze._tracePathList[0][2])
             if kill:
-                self._win.after(750, killAgent,a)         
+                self._win.after(1000, killAgent,a)         
             return
         # If path is provided as Dictionary
         if(type(p)==dict):
@@ -838,7 +838,7 @@ class maze:
                         self.tracePath(maze._tracePathList[0][0],kill=maze._tracePathList[0][1],delay=maze._tracePathList[0][2])
                 if kill:
                     
-                    self._win.after(750, killAgent,a)         
+                    self._win.after(1000, killAgent,a)         
                 return
             if a.shape=='arrow':
                 old=(a.x,a.y)
@@ -892,7 +892,7 @@ class maze:
                     if len(maze._tracePathList)>0:
                         self.tracePath(maze._tracePathList[0][0],kill=maze._tracePathList[0][1],delay=maze._tracePathList[0][2])
                 if kill:                    
-                    self._win.after(750, killAgent,a)  
+                    self._win.after(1000, killAgent,a)  
                 return
             if a.shape=='arrow':
                 old=(a.x,a.y)

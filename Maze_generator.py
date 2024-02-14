@@ -269,7 +269,7 @@ def get_highest_value_cell(cells, V):
         if V[cell] > max_value:
             max_value = V[cell]
             max_cell = cell
-    return max_cell     
+    return max_cell
 
 # Get the solve the maze from the cell values
 def get_value_iteration_path(maze_map, V, start, goal):
@@ -302,19 +302,34 @@ def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
     return max(Q_values)
 
 def value_iteration(maze_map, start, goal):
-    # Set variables
-    num_iterations = 100
     discount = .9
     R = {}
     V = {}
+    old_V = 0
+    delta = 0
+    deltas = []
     R[goal] = 1
+    delta = 1
+    epsilon = .0001
+    iterations = 0
+    # Calculate the values for each cell in the maze until convergence
     
-    # Calculate the values for each cell in the maze
-    for i in range(num_iterations):
+    while delta > epsilon:
+        iterations = iterations+1
+        deltas = []
+        old_V = V.copy()
+        
         for cell in maze_map:
             neighbouring_cells = get_neighbouring_cells(maze_map, cell)
-            V[cell] = bellman_eq(cell, neighbouring_cells, R, V, discount)
+            V[cell] = bellman_eq(cell, neighbouring_cells, R, old_V, discount)
             
+            # Calculate convergence
+            if cell in old_V:
+                cell_delta = V[cell] - old_V[cell]
+            else: cell_delta = V[cell]
+            deltas.append(cell_delta)
+        delta = abs(sum(deltas)/len(V))
+    
     path = get_value_iteration_path(maze_map, V, start, goal)
     directions = to_directions(path)
     return "Value Iteration", directions, V
@@ -333,9 +348,9 @@ title = textTitle(maze_search, "My title", "")
 #title.title = 
 
 # Solve the maze with each algorithm
-solve_maze(maze_search, start, goal, BFS)
-#solve_maze(m, start, goal, DFS)
-#solve_maze(m, start, goal, A_star)
+#solve_maze(maze_search, start, goal, BFS)
+#solve_maze(maze_search, start, goal, DFS)
+#solve_maze(maze_search, start, goal, A_star)
 solve_maze(maze_search, start, goal, value_iteration)
 maze_search.run()
 
