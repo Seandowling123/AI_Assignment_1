@@ -16,7 +16,7 @@ def find_maze_file():
 # Delete all maze files. For the end of the program
 def delete_all_maze_files():
     files = os.listdir('.')
-    csv_files = [file for file in files if file.endswith('.csv')]
+    csv_files = [file for file in files if file.endswith('.csv') and file[0:4] == 'maze']
     for csv_file in csv_files:
         os.remove(csv_file)
         
@@ -33,7 +33,13 @@ def solve_maze(maze, start, goal, search_func):
     # Display maze search and solve
     if algo_name != "Value Iteration":
         maze.tracePath({search_agent:search}, delay=1, kill=True)
-    maze.tracePath({solve_agent:path}, delay=15, kill=True)
+        maze.tracePath({solve_agent:path}, delay=15, kill=True)
+    else:
+        maze.tracePath({search_agent:path}, delay=1, kill=True)
+        show_cell_values(maze, search)
+    
+    
+    
     
     
 # Converts a path of cells to a string of directions
@@ -254,14 +260,15 @@ def A_star(maze_map, start, goal):
     return "A*", directions, past_cells
 
 # Creates a new maze
-def create_maze():
+def create_maze(starter_maze):
     maze_file = find_maze_file()
-    maze=maze(size[0],size[1])
-    maze.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", loadMaze=maze_file)
-    return maze
+    new_maze=maze(starter_maze.rows,starter_maze.cols)
+    new_maze.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", loadMaze=maze_file)
+    return new_maze
 
+# Display the value iteration values on the maze
 def show_cell_values(maze, values):
-    
+    maze = create_maze(maze)
     
     cell_agents = []
     for value in values:
@@ -270,6 +277,7 @@ def show_cell_values(maze, values):
         
     for cell_agent in cell_agents:
         maze.tracePath({cell_agent:[(0,0)]}, delay=1, kill=False)
+    maze.run()
 
 # Return the cell with the highest associated value
 def get_highest_value_cell(cells, V):
@@ -354,7 +362,7 @@ maze_search=maze(size[0],size[1])
 maze_search.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", saveMaze=True)
 maze_file = find_maze_file()
 textLabel(maze_search, "title", "val")
-#title.title = 
+textTitle(maze_search, "title", "val")
 
 # Solve the maze with each algorithm
 #solve_maze(maze_search, start, goal, BFS)
