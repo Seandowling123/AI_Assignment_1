@@ -1,4 +1,4 @@
-from pyamaze import maze, agent, COLOR, textLabel
+from pyamaze import maze, agent, COLOR, textLabel, textTitle
 from varname.helpers import Wrapper
 import time
 import math
@@ -22,13 +22,13 @@ def delete_all_maze_files():
         
 # Display the maze being solved
 def solve_maze(maze, start, goal, search_func):
-    # Define maze-solving agents
-    search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan)
-    solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.green)
-    
     # Define the paths
     algo_name, path, search = search_func(maze.maze_map, start, goal)
     print(f"{algo_name} path length: {len(path)}")
+    
+    # Define maze-solving agents
+    search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan,name=algo_name)
+    solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.green,name=algo_name)
     
     # Display maze search and solve
     if algo_name != "Value Iteration":
@@ -328,7 +328,9 @@ start = (30,30)
 maze_search=maze(size[0],size[1])
 maze_search.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", saveMaze=True)
 maze_file = find_maze_file()
-textLabel(maze_search, "cock", "cock2")
+textLabel(maze_search, "title", "val")
+title = textTitle(maze_search, "My title", "")
+#title.title = 
 
 # Solve the maze with each algorithm
 solve_maze(maze_search, start, goal, BFS)
