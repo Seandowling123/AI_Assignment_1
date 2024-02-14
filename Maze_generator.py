@@ -35,6 +35,7 @@ def solve_maze(maze, start, goal, search_func):
         maze.tracePath({search_agent:search}, delay=1, kill=True)
     maze.tracePath({solve_agent:path}, delay=15, kill=True)
     
+    
 # Converts a path of cells to a string of directions
 def to_directions(path):
     directions = ''
@@ -252,7 +253,16 @@ def A_star(maze_map, start, goal):
     directions = to_directions(path_reversed)
     return "A*", directions, past_cells
 
+# Creates a new maze
+def create_maze():
+    maze_file = find_maze_file()
+    maze=maze(size[0],size[1])
+    maze.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", loadMaze=maze_file)
+    return maze
+
 def show_cell_values(maze, values):
+    
+    
     cell_agents = []
     for value in values:
         cell_agent = agent(maze,value[0],value[1],filled=True,footprints=False,color=COLOR.from_value(values[value]))
@@ -344,7 +354,6 @@ maze_search=maze(size[0],size[1])
 maze_search.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", saveMaze=True)
 maze_file = find_maze_file()
 textLabel(maze_search, "title", "val")
-title = textTitle(maze_search, "My title", "")
 #title.title = 
 
 # Solve the maze with each algorithm
