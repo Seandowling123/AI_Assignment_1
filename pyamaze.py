@@ -301,7 +301,7 @@ class textTitle:
         self._var.set(f'{_algo_name}')
     def drawLabel(self):
         self._var = StringVar()
-        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',50), padx=200,pady=200)
+        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',50), padx=150,pady=200)
         self._var.set(f'{_algo_name}')
         self.lab.pack(expand = True,side=RIGHT, anchor=NE)
             
