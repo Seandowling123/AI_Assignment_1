@@ -53,7 +53,6 @@ def to_directions(path):
             directions += 'S'
         elif next_y < current_y:
             directions += 'N'
-            
     return directions
     
 # Return a list of the available adjacent cells
@@ -317,6 +316,7 @@ def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
 
 # Solve the maze with value iteration
 def value_iteration(maze_map, start, goal):
+    print(maze_map)
     discount = .9
     R = {}
     V = {}
@@ -327,8 +327,8 @@ def value_iteration(maze_map, start, goal):
     delta = 1
     epsilon = .0001
     iterations = 0
-    # Calculate the values for each cell in the maze until convergence
     
+    # Calculate the values for each cell in the maze until convergence
     while delta > epsilon:
         iterations = iterations+1
         deltas = []
@@ -358,9 +358,42 @@ def initialise_policy(maze_map):
         policy[cell] = rand_direction
     return policy
 
+def get_cell_from_direction(cell, direction):
+    new_cell = (-1,-1)
+    if direction == 'E':
+        new_cell = (cell[0], cell[1]+1)
+    elif direction == 'W':
+        new_cell = (cell[0], cell[1]-1)
+    elif direction == 'S':
+        new_cell = (cell[0]+1, cell[1])
+    elif direction == 'N':
+        new_cell = (cell[0]-1, cell[1])
+    return new_cell
+    
+
+def policy_evaluation(cell, maze_map, policy, R, old_V, discount):
+    V = {}
+    if maze_map[cell][policy[cell]]:
+        V[cell] = bellman_eq(cell, get_cell_from_direction(cell,[policy[cell]]), R, old_V, discount)
+        
+
 # Solve the maze with policy iteration
 def policy_iteration(maze_map, start, goal):
+    discount = .9
+    R = {}
+    V = {}
+    R[goal] = 1
+    old_V = V.copy()
     policy = initialise_policy(maze_map)
+    iterations = 0
+    
+    # Update the policy until convergence
+    iterations = iterations+1
+    
+    for cell in maze_map:
+        V[cell] = policy_evaluation(cell, maze_map, policy, R, old_V, discount)
+    print(V)
+    
     
 # Set variables
 size = (30,30)
@@ -372,7 +405,7 @@ maze_search=maze(size[0],size[1])
 maze_search.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", saveMaze=True)
 maze_file = find_maze_file()
 textLabel(maze_search, "title", "val")
-textTitle(maze_search, "title", "val")
+textTitle(maze_search, "startup title", "")
 
 # Solve the maze with each algorithm
 #solve_maze(maze_search, start, goal, BFS)
