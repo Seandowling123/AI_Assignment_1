@@ -1,5 +1,5 @@
 from pyamaze import maze, agent, COLOR, textLabel, textTitle
-from varname.helpers import Wrapper
+import random
 import time
 import math
 import os
@@ -35,11 +35,7 @@ def solve_maze(maze, start, goal, search_func):
         maze.tracePath({search_agent:search}, delay=1, kill=True)
         maze.tracePath({solve_agent:path}, delay=15, kill=True)
     else:
-        maze.tracePath({search_agent:path}, delay=1, kill=True)
-        show_cell_values(maze, search)
-    
-    
-    
+        maze.tracePath({search_agent:path}, delay=15, kill=True)
     
     
 # Converts a path of cells to a string of directions
@@ -319,6 +315,7 @@ def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
         Q_values.append(cell_R+discount*cell_V)
     return max(Q_values)
 
+# Solve the maze with value iteration
 def value_iteration(maze_map, start, goal):
     discount = .9
     R = {}
@@ -351,6 +348,19 @@ def value_iteration(maze_map, start, goal):
     path = get_value_iteration_path(maze_map, V, start, goal)
     directions = to_directions(path)
     return "Value Iteration", directions, V
+
+# Generate a random policy for each cell
+def initialise_policy(maze_map):
+    policy = {}
+    directions = ["N", "S", "E", "W"]
+    for cell in maze_map:
+        rand_direction = directions[random.randint(0,3)]
+        policy[cell] = rand_direction
+    return policy
+
+# Solve the maze with policy iteration
+def policy_iteration(maze_map, start, goal):
+    policy = initialise_policy(maze_map)
     
 # Set variables
 size = (30,30)
