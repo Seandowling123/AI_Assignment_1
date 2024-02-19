@@ -32,7 +32,7 @@ def solve_maze(maze, start, goal, search_func):
     poop = agent(maze,3,3,shape='arrow',color=COLOR.red,name=algo_name)
     
     # Display maze search and solve
-    if algo_name != "Value Iteration":
+    if algo_name != "Value Iteration" and algo_name != "Policy Iteration":
         maze.tracePath({search_agent:search}, delay=1, kill=True)
         maze.tracePath({solve_agent:path}, delay=15, kill=True)
         maze.tracePath({poop:path}, delay=15, kill=True)
@@ -475,7 +475,8 @@ textTitle(maze_search, "startup title", "")
 #solve_maze(maze_search, start, goal, BFS)
 #solve_maze(maze_search, start, goal, DFS)
 #solve_maze(maze_search, start, goal, A_star)
-solve_maze(maze_search, start, goal, value_iteration)
+#solve_maze(maze_search, start, goal, value_iteration)
+solve_maze(maze_search, start, goal, policy_iteration)
 
 maze_search.run()
 
