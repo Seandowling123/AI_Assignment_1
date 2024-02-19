@@ -304,19 +304,18 @@ def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
     Q_values = []
     if current_pos in R:
         cell_R = R[current_pos]
-    else: cell_R = 0
-    
-    # Calculate Bellman eq
-    for cell in neighbouring_cells:
-        cell_V = 0
-        if cell in V:
-            cell_V  = V[cell]
-        Q_values.append(cell_R+discount*cell_V)
+        Q_values.append(cell_R)
+    else:
+        # Calculate Bellman eq
+        for cell in neighbouring_cells:
+            cell_V = 0
+            if cell in V:
+                cell_V = V[cell]
+            Q_values.append(discount*cell_V)
     return max(Q_values)
 
 # Solve the maze with value iteration
 def value_iteration(maze_map, start, goal):
-    print(maze_map)
     discount = .9
     R = {}
     V = {}
@@ -325,7 +324,7 @@ def value_iteration(maze_map, start, goal):
     deltas = []
     R[goal] = 1
     delta = 1
-    epsilon = .0001
+    epsilon = .000001
     iterations = 0
     
     # Calculate the values for each cell in the maze until convergence
@@ -344,7 +343,7 @@ def value_iteration(maze_map, start, goal):
             else: cell_delta = V[cell]
             deltas.append(cell_delta)
         delta = abs(sum(deltas)/len(V))
-    
+    print(V)
     path = get_value_iteration_path(maze_map, V, start, goal)
     directions = to_directions(path)
     return "Value Iteration", directions, V
@@ -371,21 +370,35 @@ def get_cell_from_direction(cell, direction):
     return new_cell
     
 # Calculate the value for each cell
-def policy_evaluation(cell, maze_map, policy, R, old_V, discount):
-    V = 0
-    if not maze_map[cell][policy[cell]]:
-        old_V = {}
-    V = bellman_eq(cell, get_cell_from_direction(cell,[policy[cell]]), R, old_V, discount)
+def policy_evaluation(maze_map, policy, R, old_V, discount):
+    V = {}
+    for cell in maze_map:
+        cell_V = 0
+        
+        # Check if policy leads to an available cell
+        neighbouring_cells = get_neighbouring_cells(maze_map, cell)
+        if get_cell_from_direction(cell, policy[cell]) in neighbouring_cells:
+            
+            # Update the value
+            cell_V = bellman_eq(cell, [get_cell_from_direction(cell, policy[cell])], R, old_V, discount)
+            #if cell == (1,2):
+                #print(cell, get_cell_from_direction(cell, policy[cell]), cell_V)
+        V[cell] = cell_V
+            
     return V
 
 # Find the optimal policy for each cell
 def get_optimal_policy(cell, neighbouring_cells, policy, V):
-    highest_V_cell = get_cell_from_direction(cell,policy[cell])
-    for neigbouring_cell in neighbouring_cells:
-        if neigbouring_cell in V and highest_V_cell in V:
-            if V[neigbouring_cell] > V[highest_V_cell]:
-                highest_V_cell = neigbouring_cell
     
+    highest_V_cell = get_cell_from_direction(cell,policy[cell])
+    highest_V = 0
+    
+    for neigbouring_cell in neighbouring_cells:
+        if neigbouring_cell in V:
+            if V[neigbouring_cell] > highest_V:
+                highest_V = V[neigbouring_cell]
+                highest_V_cell = neigbouring_cell
+                #print(cell, to_directions([cell, highest_V_cell]))
     direction = to_directions([cell, highest_V_cell])
     return direction
 
@@ -406,16 +419,19 @@ def policy_iteration(maze_map, start, goal):
     policy = initialise_policy(maze_map)
     iterations = 0
     
-    # Update the policy until convergence]
-    for i in range(1,3):
+    # Update the policy until convergence
+    for i in range(1,5):
         iterations = iterations+1
         old_V = V.copy()
         
-        for cell in maze_map:
-            V[cell] = policy_evaluation(cell, maze_map, policy, R, old_V, discount)
-            policy = policy_improvement(maze_map, policy, V)
-        print(V)
-    
+        V = policy_evaluation(maze_map, policy, R, old_V, discount)
+        policy = policy_improvement(maze_map, policy, V)
+        
+        for cell in V:
+            if V[cell] > 0:
+                print(cell, V[cell])
+        print("\n")
+    #print(V)
     
 # Set variables
 size = (30,30)
@@ -433,8 +449,9 @@ textTitle(maze_search, "startup title", "")
 #solve_maze(maze_search, start, goal, BFS)
 #solve_maze(maze_search, start, goal, DFS)
 #solve_maze(maze_search, start, goal, A_star)
-#solve_maze(maze_search, start, goal, value_iteration)
-#maze_search.run()
+solve_maze(maze_search, start, goal, value_iteration)
+
+maze_search.run()
 
 policy_iteration(maze_search.maze_map, start, goal)
 
