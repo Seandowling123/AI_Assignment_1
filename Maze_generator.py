@@ -370,29 +370,49 @@ def get_cell_from_direction(cell, direction):
         new_cell = (cell[0]-1, cell[1])
     return new_cell
     
-
+# Calculate the value for each cell
 def policy_evaluation(cell, maze_map, policy, R, old_V, discount):
-    V = {}
-    if maze_map[cell][policy[cell]]:
-        V[cell] = bellman_eq(cell, get_cell_from_direction(cell,[policy[cell]]), R, old_V, discount)
-        
+    V = 0
+    if not maze_map[cell][policy[cell]]:
+        old_V = {}
+    V = bellman_eq(cell, get_cell_from_direction(cell,[policy[cell]]), R, old_V, discount)
+    return V
 
+# Find the optimal policy for each cell
+def get_optimal_policy(cell, neighbouring_cells, V):
+    highest_V_cell = 0
+    for neigbouring_cell in neighbouring_cells:
+        if V[neigbouring_cell] > V[highest_V_cell]:
+            highest_V_cell = neigbouring_cell
+    direction = to_directions([cell, highest_V_cell])
+    return direction
+
+# Update the policy of each cell to maximise value
+def policy_improvement( maze_map, policy, R, V):
+    new_policy = {}
+    for cell in maze_map:
+        neighbouring_cells = get_neighbouring_cells(maze_map, cell)
+        new_policy[cell] = get_optimal_policy(cell, neighbouring_cells, V)
+    return new_policy
+        
+        
 # Solve the maze with policy iteration
 def policy_iteration(maze_map, start, goal):
     discount = .9
     R = {}
     V = {}
     R[goal] = 1
-    old_V = V.copy()
     policy = initialise_policy(maze_map)
     iterations = 0
     
-    # Update the policy until convergence
-    iterations = iterations+1
-    
-    for cell in maze_map:
-        V[cell] = policy_evaluation(cell, maze_map, policy, R, old_V, discount)
-    print(V)
+    # Update the policy until convergence]
+    for i in range(1,3):
+        iterations = iterations+1
+        old_V = V.copy()
+        
+        for cell in maze_map:
+            V[cell] = policy_evaluation(cell, maze_map, policy, R, old_V, discount)
+        print(V)
     
     
 # Set variables
@@ -411,9 +431,10 @@ textTitle(maze_search, "startup title", "")
 #solve_maze(maze_search, start, goal, BFS)
 #solve_maze(maze_search, start, goal, DFS)
 #solve_maze(maze_search, start, goal, A_star)
-solve_maze(maze_search, start, goal, value_iteration)
+#solve_maze(maze_search, start, goal, value_iteration)
 maze_search.run()
 
+policy_iteration(maze_search.maze_map, start, goal)
 
 # Create maze for the MDP algorithms
 #maze_MDP=maze(size[0],size[1])
