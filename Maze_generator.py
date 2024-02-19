@@ -379,22 +379,28 @@ def policy_evaluation(cell, maze_map, policy, R, old_V, discount):
     return V
 
 # Find the optimal policy for each cell
-def get_optimal_policy(cell, neighbouring_cells, V):
+def get_optimal_policy(cell, neighbouring_cells, policy, V):
     highest_V_cell = 0
     for neigbouring_cell in neighbouring_cells:
-        if V[neigbouring_cell] > V[highest_V_cell]:
-            highest_V_cell = neigbouring_cell
-    direction = to_directions([cell, highest_V_cell])
+        if neigbouring_cell in V:
+            if V[neigbouring_cell] > V[highest_V_cell]:
+                highest_V_cell = neigbouring_cell
+    print([cell, highest_V_cell])
+    
+    # If no cells with values were found, policy stays the same
+    if highest_V_cell == 0:
+        direction = policy[cell]
+    else: direction = to_directions([cell, highest_V_cell])
+    
     return direction
 
 # Update the policy of each cell to maximise value
-def policy_improvement( maze_map, policy, R, V):
+def policy_improvement(maze_map, policy, V):
     new_policy = {}
     for cell in maze_map:
         neighbouring_cells = get_neighbouring_cells(maze_map, cell)
-        new_policy[cell] = get_optimal_policy(cell, neighbouring_cells, V)
+        new_policy[cell] = get_optimal_policy(cell, neighbouring_cells, policy, V)
     return new_policy
-        
         
 # Solve the maze with policy iteration
 def policy_iteration(maze_map, start, goal):
@@ -412,6 +418,7 @@ def policy_iteration(maze_map, start, goal):
         
         for cell in maze_map:
             V[cell] = policy_evaluation(cell, maze_map, policy, R, old_V, discount)
+            policy = policy_improvement(maze_map, policy, V)
         print(V)
     
     
@@ -432,7 +439,7 @@ textTitle(maze_search, "startup title", "")
 #solve_maze(maze_search, start, goal, DFS)
 #solve_maze(maze_search, start, goal, A_star)
 #solve_maze(maze_search, start, goal, value_iteration)
-maze_search.run()
+#maze_search.run()
 
 policy_iteration(maze_search.maze_map, start, goal)
 
