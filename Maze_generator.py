@@ -29,11 +29,13 @@ def solve_maze(maze, start, goal, search_func):
     # Define maze-solving agents
     search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan,name=algo_name)
     solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.green,name=algo_name)
+    poop = agent(maze,3,3,shape='arrow',color=COLOR.red,name=algo_name)
     
     # Display maze search and solve
     if algo_name != "Value Iteration":
         maze.tracePath({search_agent:search}, delay=1, kill=True)
         maze.tracePath({solve_agent:path}, delay=15, kill=True)
+        maze.tracePath({poop:path}, delay=15, kill=True)
     else:
         maze.tracePath({search_agent:path}, delay=15, kill=True)
     
@@ -420,8 +422,20 @@ def dicts_equal(dict1, dict2):
     for key in dict1.keys():
         if dict1[key] != dict2[key]:
             return False
-    print("theyre equal")
     return True
+
+# Get the solve the maze from the cell values
+def get_policy_iteration_path(start, goal, policy):
+    # Initialise variables
+    current_pos =  start
+    path = []
+    path.append(current_pos)
+    # Travel along the path of highest value cells
+    while current_pos != goal:
+        next_cell = get_cell_from_direction(current_pos, policy[current_pos])
+        current_pos = next_cell
+        path.append(current_pos)
+    return path
         
 # Solve the maze with policy iteration
 def policy_iteration(maze_map, start, goal):
@@ -445,6 +459,7 @@ def policy_iteration(maze_map, start, goal):
         
         policy_unchanged = dicts_equal(policy, old_policy)
         
+    print(V)
     
 # Set variables
 size = (30,30)
@@ -462,9 +477,9 @@ textTitle(maze_search, "startup title", "")
 #solve_maze(maze_search, start, goal, BFS)
 #solve_maze(maze_search, start, goal, DFS)
 #solve_maze(maze_search, start, goal, A_star)
-#solve_maze(maze_search, start, goal, value_iteration)
+solve_maze(maze_search, start, goal, value_iteration)
 
-#maze_search.run()
+maze_search.run()
 
 policy_iteration(maze_search.maze_map, start, goal)
 

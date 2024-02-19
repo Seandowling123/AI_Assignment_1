@@ -90,9 +90,8 @@ class agent:
         footprints-->   When the aganet will move to some other cell, its footprints
                         on the previous cell can be placed by making this True
         color-->    Color of the agent.
-        
         _orient-->  You don't need to pass this
-                    It is used with arrow shape agent to shows it turning
+                    It is used with arrow shape agent to show it turning
         position--> You don't need to pass this
                     This is the cell (x,y)
         _head-->    You don't need to pass this
