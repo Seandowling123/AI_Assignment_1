@@ -478,16 +478,19 @@ def directions_to_orientations(directions):
 
 def show_policy(m, policy):
     maze = create_maze(m)
-    print(directions_to_orientations(policy[(1,1)])[0])
+    
+    # Create an agent for each arrow
     cell_agents = []
     for cell in policy:
-        
-        if cell in policy_iteration_path:
+        if cell == (1,1):
+            colour = COLOR.green
+        elif cell in policy_iteration_path:
             colour = COLOR.chartreuse
         else: colour = COLOR.cadetblue
         cell_agent = agent(maze,cell[0],cell[1],shape='arrow',footprints=False,orient=directions_to_orientations(policy[cell])[0],color=colour)
         cell_agents.append(cell_agent)
-        
+    
+    # Plot the agents
     for cell_agent in cell_agents:
         maze.tracePath({cell_agent:[(0,0)]}, delay=1, kill=False)
     maze.run()
