@@ -380,18 +380,13 @@ def policy_evaluation(cell, maze_map, policy, R, old_V, discount):
 
 # Find the optimal policy for each cell
 def get_optimal_policy(cell, neighbouring_cells, policy, V):
-    highest_V_cell = 0
+    highest_V_cell = get_cell_from_direction(cell,policy[cell])
     for neigbouring_cell in neighbouring_cells:
-        if neigbouring_cell in V:
+        if neigbouring_cell in V and highest_V_cell in V:
             if V[neigbouring_cell] > V[highest_V_cell]:
                 highest_V_cell = neigbouring_cell
-    print([cell, highest_V_cell])
     
-    # If no cells with values were found, policy stays the same
-    if highest_V_cell == 0:
-        direction = policy[cell]
-    else: direction = to_directions([cell, highest_V_cell])
-    
+    direction = to_directions([cell, highest_V_cell])
     return direction
 
 # Update the policy of each cell to maximise value
