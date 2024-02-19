@@ -108,7 +108,7 @@ class agent:
                 raise ValueError(f'{color} is not a valid COLOR!')
         self.filled=filled
         self.shape=shape
-        self._orient=0
+        self._orient=1
         if x is None:x=parentMaze.rows
         if y is None:y=parentMaze.cols
         self.x=x

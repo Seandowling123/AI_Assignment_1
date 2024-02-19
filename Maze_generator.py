@@ -4,6 +4,9 @@ import time
 import math
 import os
 
+value_iteration_values = 0
+policy_iteration_values = 0
+
 # Find the saved maze csv file
 def find_maze_file():
     files = os.listdir('.')
@@ -34,11 +37,14 @@ def solve_maze(maze, start, goal, search_func):
     # Display maze search and solve
     if algo_name != "Value Iteration" and algo_name != "Policy Iteration":
         maze.tracePath({search_agent:search}, delay=1, kill=True)
-        maze.tracePath({solve_agent:path}, delay=15, kill=True)
         maze.tracePath({poop:path}, delay=15, kill=True)
-    else:
-        maze.tracePath({search_agent:path}, delay=15, kill=True)
-    
+    elif algo_name == "Value Iteration":
+        global value_iteration_values
+        value_iteration_values = search
+    elif algo_name == "Policy Iteration":
+        global policy_iteration_values
+        policy_iteration_values = search
+    maze.tracePath({solve_agent:path}, delay=15, kill=True)
     
 # Converts a path of cells to a string of directions
 def to_directions(path):
@@ -264,9 +270,10 @@ def create_maze(starter_maze):
     return new_maze
 
 # Display the value iteration values on the maze
-def show_cell_values(maze, values):
-    maze = create_maze(maze)
+def show_cell_values(m, values):
+    maze = create_maze(m)
     
+    print(values)
     cell_agents = []
     for value in values:
         cell_agent = agent(maze,value[0],value[1],filled=True,footprints=False,color=COLOR.from_value(values[value]))
@@ -325,7 +332,7 @@ def value_iteration(maze_map, start, goal):
     deltas = []
     R[goal] = 1
     delta = 1
-    epsilon = .000001
+    epsilon = .0000001
     iterations = 0
     
     # Calculate the values for each cell in the maze until convergence
@@ -456,9 +463,19 @@ def policy_iteration(maze_map, start, goal):
     # Get path through the maze
     path = get_policy_iteration_path(start, goal, policy)
     directions = to_directions(path)
-    print(directions)
     return "Policy Iteration", directions, policy
+
+# Convert directions list to orientations for display
+def directions_to_orientations(directions):
+    orientation_conversion = {'N': 2, 'S': 0, 'E': 1, 'W': 3}
+    orientations = []
     
+    for direction in directions:
+        orientations.append(orientation_conversion[direction])
+    return orientations
+
+def show_policy_iteration_values(m)
+
 # Set variables
 size = (30,30)
 goal = (1,1)
@@ -475,18 +492,17 @@ textTitle(maze_search, "startup title", "")
 #solve_maze(maze_search, start, goal, BFS)
 #solve_maze(maze_search, start, goal, DFS)
 #solve_maze(maze_search, start, goal, A_star)
-#solve_maze(maze_search, start, goal, value_iteration)
-solve_maze(maze_search, start, goal, policy_iteration)
+solve_maze(maze_search, start, goal, value_iteration)
+#solve_maze(maze_search, start, goal, policy_iteration)
 
 maze_search.run()
 
-policy_iteration(maze_search.maze_map, start, goal)
+show_cell_values(maze_search, value_iteration_values)
 
 # Create maze for the MDP algorithms
 #maze_MDP=maze(size[0],size[1])
 #maze_MDP.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", loadMaze=maze_file)
 
-#textLabel(maze_MDP, "cock", "cock2")
 #show_cell_values(maze_MDP, V)
 
 #maze_MDP.run()
