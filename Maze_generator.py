@@ -377,19 +377,14 @@ def policy_evaluation(maze_map, policy, R, old_V, discount, goal):
     for cell in maze_map:
         cell_V = 0
         
-        # Check if policy leads to an available cell
         neighbouring_cells = get_neighbouring_cells(maze_map, cell)
-        
         if cell == goal:
             cell_V = R[cell]
+        
+        # Update the value
         elif get_cell_from_direction(cell, policy[cell]) in neighbouring_cells:
-            
-            # Update the value
             cell_V = bellman_eq(cell, [get_cell_from_direction(cell, policy[cell])], R, old_V, discount)
-            #if (1,1) in neighbouring_cells:
-                #print(cell, get_cell_from_direction(cell, policy[cell]), bellman_eq(cell, [get_cell_from_direction(cell, policy[cell])], R, old_V, discount))
         V[cell] = cell_V
-            
     return V
 
 # Find the optimal policy for each cell
@@ -444,7 +439,6 @@ def policy_iteration(maze_map, start, goal):
     V = {}
     R[goal] = 1
     policy = initialise_policy(maze_map)
-    init_policy = policy.copy()
     policy_unchanged = 0
     iterations = 0
     
@@ -458,8 +452,12 @@ def policy_iteration(maze_map, start, goal):
         policy = policy_improvement(maze_map, policy, V)
         
         policy_unchanged = dicts_equal(policy, old_policy)
-        
-    print(V)
+    
+    # Get path through the maze
+    path = get_policy_iteration_path(start, goal, policy)
+    directions = to_directions(path)
+    print(directions)
+    return "Policy Iteration", directions, policy
     
 # Set variables
 size = (30,30)
