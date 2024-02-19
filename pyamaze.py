@@ -59,6 +59,8 @@ class COLOR(Enum):
     cyan=('cyan4','cyan4')
     green=('green4','pale green')
     blue=('DeepSkyBlue4','DeepSkyBlue2')
+    cadetblue = ('cadetblue', 'cadetblue')
+    chartreuse = ('chartreuse3', 'chartreuse3')
     yellow=('yellow2','yellow2')
     bg=('red3','gray11')
     
@@ -77,7 +79,7 @@ class agent:
     Or they can be the physical agents (like robots)
     They can have two shapes (square or arrow)
     '''
-    def __init__(self,parentMaze,x=None,y=None,shape='square',goal=None,filled=False,footprints=False,color:COLOR=COLOR.blue,name=""):
+    def __init__(self,parentMaze,x=None,y=None,shape='square',goal=None,filled=False,footprints=False,color:COLOR=COLOR.blue,name="",orient=0):
         '''
         parentmaze-->  The maze on which agent is placed.
         x,y-->  Position of the agent i.e. cell inside which agent will be placed
@@ -108,7 +110,7 @@ class agent:
                 raise ValueError(f'{color} is not a valid COLOR!')
         self.filled=filled
         self.shape=shape
-        self._orient=1
+        self._orient=orient
         if x is None:x=parentMaze.rows
         if y is None:y=parentMaze.cols
         self.x=x

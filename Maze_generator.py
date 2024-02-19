@@ -6,6 +6,7 @@ import os
 
 value_iteration_values = 0
 policy_iteration_values = 0
+policy_iteration_path = 0
 
 # Find the saved maze csv file
 def find_maze_file():
@@ -273,7 +274,6 @@ def create_maze(starter_maze):
 def show_cell_values(m, values):
     maze = create_maze(m)
     
-    print(values)
     cell_agents = []
     for value in values:
         cell_agent = agent(maze,value[0],value[1],filled=True,footprints=False,color=COLOR.from_value(values[value]))
@@ -462,19 +462,35 @@ def policy_iteration(maze_map, start, goal):
     
     # Get path through the maze
     path = get_policy_iteration_path(start, goal, policy)
+    global policy_iteration_path
+    policy_iteration_path = path
     directions = to_directions(path)
     return "Policy Iteration", directions, policy
 
 # Convert directions list to orientations for display
 def directions_to_orientations(directions):
-    orientation_conversion = {'N': 2, 'S': 0, 'E': 1, 'W': 3}
+    orientation_conversion = {'N': 0, 'S': 2, 'E': 1, 'W': 3}
     orientations = []
     
     for direction in directions:
         orientations.append(orientation_conversion[direction])
     return orientations
 
-def show_policy_iteration_values(m)
+def show_policy(m, policy):
+    maze = create_maze(m)
+    print(directions_to_orientations(policy[(1,1)])[0])
+    cell_agents = []
+    for cell in policy:
+        
+        if cell in policy_iteration_path:
+            colour = COLOR.chartreuse
+        else: colour = COLOR.cadetblue
+        cell_agent = agent(maze,cell[0],cell[1],shape='arrow',footprints=False,orient=directions_to_orientations(policy[cell])[0],color=colour)
+        cell_agents.append(cell_agent)
+        
+    for cell_agent in cell_agents:
+        maze.tracePath({cell_agent:[(0,0)]}, delay=1, kill=False)
+    maze.run()
 
 # Set variables
 size = (30,30)
@@ -492,12 +508,12 @@ textTitle(maze_search, "startup title", "")
 #solve_maze(maze_search, start, goal, BFS)
 #solve_maze(maze_search, start, goal, DFS)
 #solve_maze(maze_search, start, goal, A_star)
-solve_maze(maze_search, start, goal, value_iteration)
-#solve_maze(maze_search, start, goal, policy_iteration)
+#solve_maze(maze_search, start, goal, value_iteration)
+solve_maze(maze_search, start, goal, policy_iteration)
 
 maze_search.run()
 
-show_cell_values(maze_search, value_iteration_values)
+show_policy(maze_search, policy_iteration_values)
 
 # Create maze for the MDP algorithms
 #maze_MDP=maze(size[0],size[1])
