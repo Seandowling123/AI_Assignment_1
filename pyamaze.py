@@ -320,6 +320,7 @@ class textSubTitle:
         value-->        The value to be displayed
         '''
         global algo_metrics
+        print("here", algo_metrics)
         global current_subtitle
         current_subtitle = self
         self.title=title
@@ -334,12 +335,12 @@ class textSubTitle:
     @value.setter
     def value(self,v):
         self._value=v
-        self._var.set(f'{algo_metrics[0]} \n {algo_metrics[1]} \n {algo_metrics[2]}')
+        self._var.set(f'{algo_metrics[0]}\n{algo_metrics[1]}\n{algo_metrics[2]}')
     def drawLabel(self):
         self._var = StringVar()
-        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',50), padx=150,pady=200)
-        self._var.set(f'{algo_metrics[0]} \n {algo_metrics[1]} \n {algo_metrics[2]}')
-        self.lab.place(x=200, y=200)
+        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',32), text='Pack', anchor='w', padx=150,pady=200)
+        self._var.set(f'{algo_metrics[0]}\n{algo_metrics[1]}\n{algo_metrics[2]}')
+        self.lab.place(x=800, y=400)
             
 class textLabel:
     '''
@@ -982,10 +983,12 @@ class maze:
                 if a.goal!=(a.x,a.y) and len(p)!=0:
                     time.sleep(1)
                     global _algo_name
+                    global algo_metrics
                     _algo_name = a.name
+                    algo_metrics = a.metrics
                     current_title.lab.destroy()
                     textTitle(a._parentMaze, _algo_name, '')
-                    textTitle(a._parentMaze, '', '')
+                    textSubTitle(a._parentMaze, '', '')
                     self._tracePathSingle(a,p,kill,showMarked,delay)
     def run(self):
         '''
