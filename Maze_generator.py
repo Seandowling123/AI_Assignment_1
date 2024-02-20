@@ -285,7 +285,7 @@ def show_cell_values(m, values):
     
     cell_agents = []
     for value in values:
-        cell_agent = agent(maze,value[0],value[1],filled=True,footprints=False,color=COLOR.from_value(values[value]))
+        cell_agent = agent(maze,value[0],value[1],filled=True,footprints=False,color=COLOR.from_value(values[value]),name="Value Iteration")
         cell_agents.append(cell_agent)
         
     for cell_agent in cell_agents:
@@ -496,7 +496,7 @@ def show_policy(m, policy):
         elif cell in policy_iteration_path:
             colour = COLOR.chartreuse
         else: colour = COLOR.cadetblue
-        cell_agent = agent(maze,cell[0],cell[1],shape='arrow',footprints=False,orient=directions_to_orientations(policy[cell])[0],color=colour)
+        cell_agent = agent(maze,cell[0],cell[1],shape='arrow',footprints=False,orient=directions_to_orientations(policy[cell])[0],color=colour,name="Policy Iteration")
         cell_agents.append(cell_agent)
     
     # Plot the agents
