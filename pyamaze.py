@@ -32,7 +32,9 @@ import matplotlib.colors as mcolors
 import time
 
 _algo_name = ""
+algo_metrics = ["0","0","0"]
 current_title = ""
+current_subtitle = ""
 
 def rgb_to_colour_code(rgb):
     r, g, b = rgb
@@ -79,7 +81,7 @@ class agent:
     Or they can be the physical agents (like robots)
     They can have two shapes (square or arrow)
     '''
-    def __init__(self,parentMaze,x=None,y=None,shape='square',goal=None,filled=False,footprints=False,color:COLOR=COLOR.blue,name="",orient=0):
+    def __init__(self,parentMaze,x=None,y=None,shape='square',goal=None,filled=False,footprints=False,color:COLOR=COLOR.blue,name="",metrics=["0","0","0"],orient=0):
         '''
         parentmaze-->  The maze on which agent is placed.
         x,y-->  Position of the agent i.e. cell inside which agent will be placed
@@ -124,6 +126,7 @@ class agent:
         self._body=[]
         self.position=(self.x,self.y)
         self.name = name
+        self.metrics = metrics
         
     @property
     def x(self):
@@ -305,6 +308,38 @@ class textTitle:
         self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',50), padx=150,pady=200)
         self._var.set(f'{_algo_name}')
         self.lab.place(x=800, y=50)
+        
+class textSubTitle:
+    '''
+    This class is to create Text Label to show different results on the window.
+    '''
+    def __init__(self,parentMaze,title,value):
+        '''
+        parentmaze-->   The maze on which Label will be displayed.
+        title-->        The title of the value to be displayed
+        value-->        The value to be displayed
+        '''
+        global algo_metrics
+        global current_subtitle
+        current_subtitle = self
+        self.title=title
+        self._value=value
+        self._parentMaze=parentMaze
+        # self._parentMaze._labels.append(self)
+        self._var=None
+        self.drawLabel()
+    @property
+    def value(self):
+        return self._value
+    @value.setter
+    def value(self,v):
+        self._value=v
+        self._var.set(f'{algo_metrics[0]} \n {algo_metrics[1]} \n {algo_metrics[2]}')
+    def drawLabel(self):
+        self._var = StringVar()
+        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',50), padx=150,pady=200)
+        self._var.set(f'{algo_metrics[0]} \n {algo_metrics[1]} \n {algo_metrics[2]}')
+        self.lab.place(x=200, y=200)
             
 class textLabel:
     '''
@@ -950,6 +985,7 @@ class maze:
                     _algo_name = a.name
                     current_title.lab.destroy()
                     textTitle(a._parentMaze, _algo_name, '')
+                    textTitle(a._parentMaze, '', '')
                     self._tracePathSingle(a,p,kill,showMarked,delay)
     def run(self):
         '''

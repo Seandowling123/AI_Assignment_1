@@ -4,6 +4,7 @@ import time
 import math
 import os
 
+# Some global variables
 value_iteration_values = 0
 policy_iteration_values = 0
 policy_iteration_path = 0
@@ -25,20 +26,28 @@ def delete_all_maze_files():
         os.remove(csv_file)
         
 # Display the maze being solved
-def solve_maze(maze, start, goal, search_func):
+def run_algorithm(maze, start, goal, search_func):
     # Define the paths
+    start_time = time.time()
     algo_name, path, search = search_func(maze.maze_map, start, goal)
-    print(f"{algo_name} path length: {len(path)}")
+    end_time = time.time()
+    
+    # Get performance metrics
+    nodes_searched = 'N/A'
+    elapsed_time = end_time - start_time
+    path_length = len(path)
+    if algo_name == "Value Iteration" or algo_name == "Policy Iteration":
+        nodes_searched = len(search)
+    metrics = [str(path_length), str(nodes_searched), str(elapsed_time)]
+    print(f"{algo_name} Metrics: {metrics}")
     
     # Define maze-solving agents
-    search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan,name=algo_name)
-    solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.green,name=algo_name)
-    poop = agent(maze,3,3,shape='arrow',color=COLOR.red,name=algo_name)
+    search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan,name=algo_name,metrics=metrics)
+    solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.green,name=algo_name,metrics=metrics)
     
     # Display maze search and solve
     if algo_name != "Value Iteration" and algo_name != "Policy Iteration":
         maze.tracePath({search_agent:search}, delay=1, kill=True)
-        maze.tracePath({poop:path}, delay=15, kill=True)
     elif algo_name == "Value Iteration":
         global value_iteration_values
         value_iteration_values = search
@@ -129,7 +138,7 @@ def BFS(maze_map, start, goal):
         past_cells.append(current_pos)
         
         if current_pos in checked_cells:
-            print("fuck")
+            print("shit")
         
     # If the goal has been reached, get the path
     if current_pos == goal:    
@@ -508,23 +517,16 @@ textLabel(maze_search, "title", "val")
 textTitle(maze_search, "startup title", "")
 
 # Solve the maze with each algorithm
-#solve_maze(maze_search, start, goal, BFS)
-#solve_maze(maze_search, start, goal, DFS)
-#solve_maze(maze_search, start, goal, A_star)
-#solve_maze(maze_search, start, goal, value_iteration)
-solve_maze(maze_search, start, goal, policy_iteration)
+run_algorithm(maze_search, start, goal, BFS)
+#run_algorithm(maze_search, start, goal, DFS)
+#run_algorithm(maze_search, start, goal, A_star)
+#run_algorithm(maze_search, start, goal, value_iteration)
+#run_algorithm(maze_search, start, goal, policy_iteration)
 
 maze_search.run()
 
+show_cell_values(maze_search, value_iteration_values)
 show_policy(maze_search, policy_iteration_values)
-
-# Create maze for the MDP algorithms
-#maze_MDP=maze(size[0],size[1])
-#maze_MDP.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", loadMaze=maze_file)
-
-#show_cell_values(maze_MDP, V)
-
-#maze_MDP.run()
 
 delete_all_maze_files()
     
