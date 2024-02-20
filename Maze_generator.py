@@ -36,7 +36,7 @@ def run_algorithm(maze, start, goal, search_func):
     nodes_searched = 'N/A'
     elapsed_time = end_time - start_time
     path_length = len(path)
-    if algo_name == "Value Iteration" or algo_name == "Policy Iteration":
+    if algo_name != "Value Iteration" and algo_name != "Policy Iteration":
         nodes_searched = len(search)
     metrics = [str(path_length), str(nodes_searched), str(elapsed_time)]
     print(f"{algo_name} Metrics: {metrics}")
