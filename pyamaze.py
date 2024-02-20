@@ -320,7 +320,6 @@ class textSubTitle:
         value-->        The value to be displayed
         '''
         global algo_metrics
-        print("here", algo_metrics)
         global current_subtitle
         current_subtitle = self
         self.title=title
@@ -339,7 +338,10 @@ class textSubTitle:
     def drawLabel(self):
         self._var = StringVar()
         self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',28), justify="left", anchor='w')
-        self._var.set(f'Path Length:\t{algo_metrics[0]}\nNodes Searched:\t{algo_metrics[1]}\nTime Taken:\t{algo_metrics[2]}')
+        sub_title_string = ""
+        if algo_metrics != ["0","0","0"]:
+            sub_title_string = f'Path Length:\t{algo_metrics[0]}\nNodes Searched:\t{algo_metrics[1]}\nTime Taken:\t{algo_metrics[2]}'
+        self._var.set(sub_title_string)
         self.lab.place(x=850, y=280)
             
 class textLabel:
