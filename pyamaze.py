@@ -307,7 +307,7 @@ class textTitle:
         self._var = StringVar()
         self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',50))
         self._var.set(f'{_algo_name}')
-        self.lab.place(x=800, y=50)
+        self.lab.place(x=850, y=180)
         
 class textSubTitle:
     '''
@@ -338,9 +338,9 @@ class textSubTitle:
         self._var.set(f'{algo_metrics[0]}\n{algo_metrics[1]}\n{algo_metrics[2]}')
     def drawLabel(self):
         self._var = StringVar()
-        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',32), justify="left", anchor='w')
-        self._var.set(f'Path Length: {algo_metrics[0]}\nNodes Searched: {algo_metrics[1]}\nTime Taken: {algo_metrics[2]}')
-        self.lab.place(x=800, y=150)
+        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',28), justify="left", anchor='w')
+        self._var.set(f'Path Length:\t{algo_metrics[0]}\nNodes Searched:\t{algo_metrics[1]}\nTime Taken:\t{algo_metrics[2]}')
+        self.lab.place(x=850, y=280)
             
 class textLabel:
     '''
