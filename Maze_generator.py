@@ -38,7 +38,7 @@ def run_algorithm(maze, start, goal, search_func):
     path_length = len(path)
     if algo_name != "Value Iteration" and algo_name != "Policy Iteration":
         nodes_searched = len(search)
-    metrics = [str(path_length), str(nodes_searched), str(elapsed_time)]
+    metrics = [str(path_length), str(nodes_searched), "{:.2f}".format(elapsed_time)]
     print(f"{algo_name} Metrics: {metrics}")
     
     # Define maze-solving agents
