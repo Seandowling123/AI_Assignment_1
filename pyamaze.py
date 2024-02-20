@@ -61,7 +61,7 @@ class COLOR(Enum):
     cyan=('cyan4','cyan4')
     green=('green4','pale green')
     blue=('DeepSkyBlue4','DeepSkyBlue2')
-    cadetblue = ('cadetblue', 'cadetblue')
+    cadetblue = ('cyan2', 'cyan2')
     chartreuse = ('chartreuse3', 'chartreuse3')
     yellow=('yellow2','yellow2')
     bg=('red3','gray11')
@@ -305,7 +305,7 @@ class textTitle:
         self._var.set(f'{_algo_name}')
     def drawLabel(self):
         self._var = StringVar()
-        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',50))
+        self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',50), justify="left", anchor='w')
         self._var.set(f'{_algo_name}')
         self.lab.place(x=850, y=180)
         
@@ -340,7 +340,7 @@ class textSubTitle:
         self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',28), justify="left", anchor='w')
         sub_title_string = ""
         if algo_metrics != ["0","0","0"]:
-            sub_title_string = f'Path Length:\t{algo_metrics[0]}\nNodes Searched:\t{algo_metrics[1]}\nTime Taken:\t{algo_metrics[2]}'
+            sub_title_string = f'Path Length:\t{algo_metrics[0]}\nNodes Searched:\t{algo_metrics[1]}\nTime Taken:\t{algo_metrics[2]} ms'
         self._var.set(sub_title_string)
         self.lab.place(x=850, y=280)
             
@@ -377,7 +377,7 @@ class maze:
     '''
     This is the main class to create maze.
     '''
-    def __init__(self,rows=10,cols=10):
+    def __init__(self,rows=10,cols=10,name=''):
         '''
         rows--> No. of rows of the maze
         cols--> No. of columns of the maze
@@ -406,6 +406,10 @@ class maze:
         self._canvas=None
         self._agents=[]
         self.markCells=[]
+        
+        global _algo_name
+        if name != '':
+            _algo_name = name
 
     @property
     def grid(self):

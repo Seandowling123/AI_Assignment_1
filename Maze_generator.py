@@ -25,6 +25,12 @@ def delete_all_maze_files():
     for csv_file in csv_files:
         os.remove(csv_file)
         
+def print_metrics(algo_name, path_length, nodes_searched, elapsed_time):
+    print(f"{algo_name} Metrics:")
+    print(f"  Path Length:\t\t\t{path_length:}")
+    print(f"  Nodes Searched:\t\t{nodes_searched:}")
+    print(f"  Elapsed Time:\t\t{elapsed_time:} seconds\n")
+        
 # Display the maze being solved
 def run_algorithm(maze, start, goal, search_func):
     # Define the paths
@@ -39,7 +45,7 @@ def run_algorithm(maze, start, goal, search_func):
     if algo_name != "Value Iteration" and algo_name != "Policy Iteration":
         nodes_searched = len(search)
     metrics = [str(path_length), str(nodes_searched), "{:.2f}".format(elapsed_time)]
-    print(f"{algo_name} Metrics: {metrics}")
+    print_metrics(algo_name, *metrics)
     
     # Define maze-solving agents
     search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan,name=algo_name,metrics=metrics)
@@ -54,7 +60,7 @@ def run_algorithm(maze, start, goal, search_func):
     elif algo_name == "Policy Iteration":
         global policy_iteration_values
         policy_iteration_values = search
-    maze.tracePath({solve_agent:path}, delay=15, kill=True)
+    maze.tracePath({solve_agent:path}, delay=50, kill=True)
     
 # Converts a path of cells to a string of directions
 def to_directions(path):
@@ -273,15 +279,16 @@ def A_star(maze_map, start, goal):
     return "A*", directions, past_cells
 
 # Creates a new maze
-def create_maze(starter_maze):
+def create_maze(starter_maze, name):
     maze_file = find_maze_file()
-    new_maze=maze(starter_maze.rows,starter_maze.cols)
+    new_maze=maze(starter_maze.rows,starter_maze.cols,name=name)
     new_maze.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", loadMaze=maze_file)
+    textTitle(new_maze, "", "")
     return new_maze
 
 # Display the value iteration values on the maze
 def show_cell_values(m, values):
-    maze = create_maze(m)
+    maze = create_maze(m, "Value Iteration\nSolution")
     
     cell_agents = []
     for value in values:
@@ -289,7 +296,7 @@ def show_cell_values(m, values):
         cell_agents.append(cell_agent)
         
     for cell_agent in cell_agents:
-        maze.tracePath({cell_agent:[(0,0)]}, delay=1, kill=False)
+        maze.tracePath({cell_agent:[(1,1)]}, delay=1, kill=False)
     maze.run()
 
 # Return the cell with the highest associated value
@@ -486,7 +493,7 @@ def directions_to_orientations(directions):
     return orientations
 
 def show_policy(m, policy):
-    maze = create_maze(m)
+    maze = create_maze(m, "Policy Iteration\nSolution")
     
     # Create an agent for each arrow
     cell_agents = []
@@ -513,15 +520,14 @@ start = (30,30)
 maze_search=maze(size[0],size[1])
 maze_search.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", saveMaze=True)
 maze_file = find_maze_file()
-textLabel(maze_search, "title", "val")
 textTitle(maze_search, "startup title", "")
 
 # Solve the maze with each algorithm
 run_algorithm(maze_search, start, goal, BFS)
-#run_algorithm(maze_search, start, goal, DFS)
-#run_algorithm(maze_search, start, goal, A_star)
-#run_algorithm(maze_search, start, goal, value_iteration)
-#run_algorithm(maze_search, start, goal, policy_iteration)
+run_algorithm(maze_search, start, goal, DFS)
+run_algorithm(maze_search, start, goal, A_star)
+run_algorithm(maze_search, start, goal, value_iteration)
+run_algorithm(maze_search, start, goal, policy_iteration)
 
 maze_search.run()
 
