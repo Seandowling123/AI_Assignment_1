@@ -1,11 +1,11 @@
 from pyamaze import maze, agent, COLOR, textTitle
 from collections import Counter
-import pprint
 import random
 import time
 import os
 
 # Some global variables
+maze_speed = 0
 value_iteration_values = 0
 policy_iteration_values = 0
 policy_iteration_path = 0
@@ -64,6 +64,9 @@ def run_algorithm(maze, start, goal, search_func):
     search_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.cyan,name=algo_name,metrics=metrics)
     solve_agent = agent(maze,start[0],start[1],filled=True,footprints=True,color=COLOR.green,name=algo_name,metrics=metrics)
     
+    # Set the speed for the agent 
+    global maze_speed
+    
     # Display maze search and solve
     if algo_name != "Value Iteration" and algo_name != "Policy Iteration":
         maze.tracePath({search_agent:search}, delay=1, kill=True)
@@ -73,7 +76,7 @@ def run_algorithm(maze, start, goal, search_func):
     elif algo_name == "Policy Iteration":
         global policy_iteration_values
         policy_iteration_values = search
-    maze.tracePath({solve_agent:path}, delay=50, kill=True)
+    maze.tracePath({solve_agent:path}, delay=maze_speed, kill=True)
     
 # Converts a path of cells to a string of directions
 def to_directions(path):
@@ -345,7 +348,7 @@ def show_cell_values(m, values):
     for value in values:
         i = i+1
         if i % (len(values)/5) == 0:
-            print(f"{i/(len(values))}%")
+            print(f"{(i/(len(values)))*100}%")
         cell_agent = agent(maze,value[0],value[1],filled=True,footprints=False,color=COLOR.from_value(values[value]),name="Value Iteration")
         cell_agents.append(cell_agent)
         
@@ -592,6 +595,8 @@ while user_input not in list(maze_options.keys()):
     user_input = (input()).upper()
 
 maze_sizes = {'S': (5,5),'M': (25,25),'L': (50,50)}
+maze_speeds = {'S': 250 ,'M': 50,'L': 25}
+maze_speed = maze_speeds[user_input]
 
 # Set maze parameters
 size = (maze_sizes[user_input])
