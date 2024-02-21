@@ -340,7 +340,7 @@ class textSubTitle:
         self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',28), justify="left", anchor='w')
         sub_title_string = ""
         if algo_metrics != ["0","0","0"]:
-            sub_title_string = f'Path Length:\t{algo_metrics[0]}\nNodes Searched:\t{algo_metrics[1]}\nNodes Queued:\t{algo_metrics[2]}\nIterations:\t{algo_metrics[3]}\nTime Taken:\t{algo_metrics[4]} ms'
+            sub_title_string = f'Path Length:\t{algo_metrics[0]}\nNodes Searched:\t{algo_metrics[1]}\nNodes Queued:\t{algo_metrics[2]}\nIterations:\t\t{algo_metrics[3]}\nTime Taken:\t{algo_metrics[4]} ms'
         self._var.set(sub_title_string)
         self.lab.place(x=850, y=280)
             
