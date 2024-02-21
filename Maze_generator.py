@@ -289,7 +289,6 @@ def A_star(maze_map, start, goal):
         # Calculate heuristics
         g_values.update(get_g(available_cells, current_pos, g_values))
         cell_costs.update(get_cell_costs(available_cells, g_values, cell_costs, goal))
-        print(list(cell_costs.keys()))
         monitor_que(list(cell_costs.keys()))
         
         # Set previous postions
