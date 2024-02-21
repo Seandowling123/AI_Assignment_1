@@ -27,9 +27,9 @@ def delete_all_maze_files():
         
 def print_metrics(algo_name, path_length, nodes_searched, elapsed_time):
     print(f"{algo_name} Metrics:")
-    print(f"  Path Length:\t\t\t{path_length:}")
-    print(f"  Nodes Searched:\t\t{nodes_searched:}")
-    print(f"  Elapsed Time:\t\t{elapsed_time:} seconds\n")
+    print(f"  Path Length:   \t{path_length:}")
+    print(f"  Nodes Searched:\t{nodes_searched:}")
+    print(f"  Elapsed Time:  \t{elapsed_time:} seconds\n")
         
 # Display the maze being solved
 def run_algorithm(maze, start, goal, search_func):
@@ -116,6 +116,10 @@ def get_neighbouring_cells(maze_map, current_pos):
         new_pos = (current_pos[0], current_pos[1]-1)
         available_positions.append(new_pos)
     return available_positions
+
+# -----------------
+# Search Algorithms
+# -----------------
 
 # Solve the maze with BFS
 def BFS(maze_map, start, goal):
@@ -277,6 +281,10 @@ def A_star(maze_map, start, goal):
     path_reversed = path[::-1]
     directions = to_directions(path_reversed)
     return "A*", directions, past_cells
+
+# --------------
+# MDP Algorithms
+# --------------
 
 # Creates a new maze
 def create_maze(starter_maze, name):
