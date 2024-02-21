@@ -207,9 +207,9 @@ def DFS(maze_map, start, goal):
     directions = to_directions(path_reversed)
     return "DFS", directions, past_cells
 
-# Calculates euclidean distance between a cell and the goal
+# Calculates Manhattan distance between a cell and the goal
 def get_heuristic(cell, goal):
-    distance = math.sqrt((cell[0] - goal[0])**2 + (cell[1] - goal[1])**2)
+    distance = abs(cell[0] - goal[0]) + abs(cell[1] - goal[1])
     return distance
 
 # Calculates the g value for each available cell 
