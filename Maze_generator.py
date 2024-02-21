@@ -1,4 +1,5 @@
-from pyamaze import maze, agent, COLOR, textLabel, textTitle
+from pyamaze import maze, agent, COLOR, textTitle
+import psutil
 import random
 import time
 import math
