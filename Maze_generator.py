@@ -1,5 +1,6 @@
 from pyamaze import maze, agent, COLOR, textTitle
 from collections import Counter
+import pprint
 import random
 import time
 import os
@@ -40,7 +41,7 @@ def print_metrics(algo_name, path_length, nodes_searched, num_cells_queued, iter
 def run_algorithm(maze, start, goal, search_func):
     # Define the paths
     start_time = time.time()
-    algo_name, path, search = search_func(maze.maze_map, start, goal)
+    algo_name, path, search = search_func(maze, start, goal)
     end_time = time.time()
     
     # Get performance metrics
@@ -138,7 +139,8 @@ def monitor_que(current_que):
 # -----------------
 
 # Solve the maze with BFS
-def BFS(maze_map, start, goal):
+def BFS(maze, start, goal):
+    maze_map = maze.maze_map
     que = []
     checked_cells = []
     prev_pos = {}
@@ -188,7 +190,8 @@ def BFS(maze_map, start, goal):
     return "BFS", directions, past_cells
 
 # Solve the maze with DFS
-def DFS(maze_map, start, goal):
+def DFS(maze, start, goal):
+    maze_map = maze.maze_map
     que = []
     checked_cells = []
     prev_pos = {}
@@ -262,7 +265,8 @@ def get_lowest_cost_cell(cell_costs):
     return min_key
 
 # Solve the maze with A*
-def A_star(maze_map, start, goal):
+def A_star(maze, start, goal):
+    maze_map = maze.maze_map
     checked_cells = []
     prev_pos = {}
     g_values = {}
@@ -336,7 +340,12 @@ def show_cell_values(m, values):
     maze = create_maze(m, "Value Iteration\nSolution")
     
     cell_agents = []
+    i = 0
+    print("Loading Solution Maze:")
     for value in values:
+        i = i+1
+        if i % (len(values)/5) == 0:
+            print(f"{i/(len(values))}%")
         cell_agent = agent(maze,value[0],value[1],filled=True,footprints=False,color=COLOR.from_value(values[value]),name="Value Iteration")
         cell_agents.append(cell_agent)
         
@@ -386,7 +395,8 @@ def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
     return max(V_values)
 
 # Solve the maze with value iteration
-def value_iteration(maze_map, start, goal):
+def value_iteration(maze, start, goal):
+    maze_map = maze.maze_map
     discount = .9
     R = {}
     V = {}
@@ -395,11 +405,10 @@ def value_iteration(maze_map, start, goal):
     deltas = []
     R[goal] = 1
     delta = 1
-    epsilon = .0000001
     iterations = 0
     
     # Calculate the values for each cell in the maze until convergence
-    while delta > epsilon:
+    while delta > 0:
         iterations = iterations+1
         deltas = []
         old_V = V.copy()
@@ -508,7 +517,8 @@ def get_policy_iteration_path(start, goal, policy):
     return path
         
 # Solve the maze with policy iteration
-def policy_iteration(maze_map, start, goal):
+def policy_iteration(maze, start, goal):
+    maze_map = maze.maze_map
     discount = .9
     R = {}
     V = {}
@@ -565,11 +575,28 @@ def show_policy(m, policy):
     for cell_agent in cell_agents:
         maze.tracePath({cell_agent:[(0,0)]}, delay=1, kill=False)
     maze.run()
+    
+    
+# Start procedure
+maze_options = {'S': '5x5','M': '50x50','L': '100x100'}
+user_input = 0
+while user_input not in list(maze_options.keys()):
+    # Print the maze sizes in a visually appealing format
+    print("Please choose a maze size from the options below:")
+    print("  ┌────────────┬────────────┐")
+    print("  │   Option   │   Size     │")
+    print("  ├────────────┼────────────┤")
+    for option, size in maze_options.items():
+        print(f"  │     {option:<7}│   {size:<7}  │")
+    print("  └────────────┴────────────┘")
+    user_input = (input()).upper()
+
+maze_sizes = {'S': (5,5),'M': (25,25),'L': (50,50)}
 
 # Set maze parameters
-size = (30,30)
+size = (maze_sizes[user_input])
 goal = (1,1)
-start = (30,30)
+start = (size[0],size[1])
 
 # Create maze for the search algorithms
 maze_search=maze(size[0],size[1])
@@ -578,8 +605,8 @@ maze_file = find_maze_file()
 textTitle(maze_search, "startup title", "")
 
 # Solve the maze with each algorithm
-#run_algorithm(maze_search, start, goal, BFS)
-#run_algorithm(maze_search, start, goal, DFS)
+run_algorithm(maze_search, start, goal, BFS)
+run_algorithm(maze_search, start, goal, DFS)
 run_algorithm(maze_search, start, goal, A_star)
 run_algorithm(maze_search, start, goal, value_iteration)
 run_algorithm(maze_search, start, goal, policy_iteration)
