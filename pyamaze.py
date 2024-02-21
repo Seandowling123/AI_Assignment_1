@@ -32,7 +32,7 @@ import matplotlib.colors as mcolors
 import time
 
 _algo_name = ""
-algo_metrics = ["0","0","0"]
+algo_metrics = ["0","0","0","0","0"]
 current_title = ""
 current_subtitle = ""
 
@@ -81,7 +81,7 @@ class agent:
     Or they can be the physical agents (like robots)
     They can have two shapes (square or arrow)
     '''
-    def __init__(self,parentMaze,x=None,y=None,shape='square',goal=None,filled=False,footprints=False,color:COLOR=COLOR.blue,name="",metrics=["0","0","0"],orient=0):
+    def __init__(self,parentMaze,x=None,y=None,shape='square',goal=None,filled=False,footprints=False,color:COLOR=COLOR.blue,name="",metrics=["0","0","0","0","0"],orient=0):
         '''
         parentmaze-->  The maze on which agent is placed.
         x,y-->  Position of the agent i.e. cell inside which agent will be placed
@@ -340,7 +340,7 @@ class textSubTitle:
         self.lab = Label(self._parentMaze._canvas, textvariable=self._var, bg="gray11", fg="white",font=('serif',28), justify="left", anchor='w')
         sub_title_string = ""
         if algo_metrics != ["0","0","0"]:
-            sub_title_string = f'Path Length:\t{algo_metrics[0]}\nNodes Searched:\t{algo_metrics[1]}\nTime Taken:\t{algo_metrics[2]} ms'
+            sub_title_string = f'Path Length:\t{algo_metrics[0]}\nNodes Searched:\t{algo_metrics[1]}\nNodes Queued:\t{algo_metrics[2]}\nIterations:\t{algo_metrics[3]}\nTime Taken:\t{algo_metrics[4]} ms'
         self._var.set(sub_title_string)
         self.lab.place(x=850, y=280)
             

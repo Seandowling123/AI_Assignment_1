@@ -1,14 +1,15 @@
 from pyamaze import maze, agent, COLOR, textTitle
-import psutil
+from collections import Counter
 import random
 import time
-import math
 import os
 
 # Some global variables
 value_iteration_values = 0
 policy_iteration_values = 0
 policy_iteration_path = 0
+queued_cells = []
+num_iterations = 0
 
 # Find the saved maze csv file
 def find_maze_file():
@@ -27,10 +28,12 @@ def delete_all_maze_files():
         os.remove(csv_file)
 
 # Print performance metrics for the algoritms
-def print_metrics(algo_name, path_length, nodes_searched, elapsed_time):
+def print_metrics(algo_name, path_length, nodes_searched, num_cells_queued, iterations, elapsed_time):
     print(f"{algo_name} Metrics:")
     print(f"  Path Length:   \t{path_length:}")
     print(f"  Nodes Searched:\t{nodes_searched:}")
+    print(f"  Nodes Queued:  \t{num_cells_queued:}")
+    print(f"  Iterations:    \t{iterations:}")
     print(f"  Elapsed Time:  \t{elapsed_time:} seconds\n")
         
 # Display the maze being solved
@@ -42,11 +45,18 @@ def run_algorithm(maze, start, goal, search_func):
     
     # Get performance metrics
     nodes_searched = 'N/A'
-    elapsed_time = end_time - start_time
+    num_cells_queued = 'N/A'
     path_length = len(path)
+    global num_iterations
+    iterations = num_iterations
+    num_iterations = 0
+    elapsed_time = end_time - start_time
     if algo_name != "Value Iteration" and algo_name != "Policy Iteration":
         nodes_searched = len(search)
-    metrics = [str(path_length), str(nodes_searched), "{:.2f}".format(elapsed_time)]
+        global queued_cells
+        num_cells_queued = sum(1 for count in Counter(map(tuple, queued_cells)).values() if count == 1)
+        queued_cells = []
+    metrics = [str(path_length), str(nodes_searched), str(num_cells_queued), iterations, "{:.4f}".format(elapsed_time)]
     print_metrics(algo_name, *metrics)
     
     # Define maze-solving agents
@@ -119,6 +129,10 @@ def get_neighbouring_cells(maze_map, current_pos):
         available_positions.append(new_pos)
     return available_positions
 
+def monitor_que(current_que):
+    global queued_cells
+    queued_cells.append(current_que)
+
 # -----------------
 # Search Algorithms
 # -----------------
@@ -133,13 +147,17 @@ def BFS(maze_map, start, goal):
     current_pos = start
     past_cells = [current_pos]
     que = que + get_available_cells(maze_map, current_pos, checked_cells)
+    iterations = 0
     
     # While the goal has not been reached & the que is not empty
     while((current_pos != goal) and (len(que) > 0)):
+        iterations = iterations+1
+        
         # Check neaby available cells
         checked_cells.append(current_pos)
         available_cells = get_available_cells(maze_map, current_pos, checked_cells)
         que = que + available_cells
+        monitor_que(que)
         for cell in available_cells:
             prev_pos[cell] = current_pos
         
@@ -151,7 +169,10 @@ def BFS(maze_map, start, goal):
         
         if current_pos in checked_cells:
             print("shit")
-        
+    
+    global num_iterations
+    num_iterations = iterations
+    
     # If the goal has been reached, get the path
     if current_pos == goal:    
         path = []
@@ -176,13 +197,17 @@ def DFS(maze_map, start, goal):
     current_pos = start
     past_cells = [current_pos]
     que = que + get_available_cells(maze_map, current_pos, checked_cells)
+    iterations = 0
     
     # While the goal has not been reached & the que is not empty
     while((current_pos != goal) and (len(que) > 0)):
+        iterations = iterations+1
+        
         # Check neaby available cells
         checked_cells.append(current_pos)
         available_cells = get_available_cells(maze_map, current_pos, checked_cells)
         que = que + available_cells
+        monitor_que(que)
         for cell in available_cells:
             prev_pos[cell] = current_pos
         
@@ -192,6 +217,9 @@ def DFS(maze_map, start, goal):
         current_pos = que[len(que)-1]
         del que[len(que)-1]
         past_cells.append(current_pos)
+        
+    global num_iterations
+    num_iterations = iterations
         
     # If the goal has been reached, get the path
     if current_pos == goal:    
@@ -248,9 +276,12 @@ def A_star(maze_map, start, goal):
     available_cells = get_available_cells(maze_map, current_pos, checked_cells)
     g_values.update(get_g(available_cells, current_pos, g_values))
     cell_costs.update(get_cell_costs(available_cells, g_values, cell_costs, goal))
+    iterations = 0
     
     # While the goal has not been reached & the que is not empty
     while(current_pos != goal):
+        iterations = iterations+1
+        
         # Check neaby available cells
         checked_cells.append(current_pos)
         available_cells = get_available_cells(maze_map, current_pos, checked_cells)
@@ -258,6 +289,8 @@ def A_star(maze_map, start, goal):
         # Calculate heuristics
         g_values.update(get_g(available_cells, current_pos, g_values))
         cell_costs.update(get_cell_costs(available_cells, g_values, cell_costs, goal))
+        print(list(cell_costs.keys()))
+        monitor_que(list(cell_costs.keys()))
         
         # Set previous postions
         for cell in available_cells:
@@ -269,6 +302,9 @@ def A_star(maze_map, start, goal):
         current_pos = get_lowest_cost_cell(cell_costs)
         del cell_costs[current_pos]
         past_cells.append(current_pos)
+        
+    global num_iterations
+    num_iterations = iterations
         
     # If the goal has been reached, get the path
     if current_pos == goal:    
@@ -380,6 +416,9 @@ def value_iteration(maze_map, start, goal):
             else: cell_delta = V[cell]
             deltas.append(cell_delta)
         delta = abs(sum(deltas)/len(V))
+        
+    global num_iterations
+    num_iterations = iterations
     
     # Get path through the maze
     path = get_value_iteration_path(maze_map, V, start, goal)
@@ -490,6 +529,9 @@ def policy_iteration(maze_map, start, goal):
         
         policy_unchanged = dicts_equal(policy, old_policy)
     
+    global num_iterations
+    num_iterations = iterations
+    
     # Get path through the maze
     path = get_policy_iteration_path(start, goal, policy)
     global policy_iteration_path
@@ -537,8 +579,8 @@ maze_file = find_maze_file()
 textTitle(maze_search, "startup title", "")
 
 # Solve the maze with each algorithm
-run_algorithm(maze_search, start, goal, BFS)
-run_algorithm(maze_search, start, goal, DFS)
+#run_algorithm(maze_search, start, goal, BFS)
+#run_algorithm(maze_search, start, goal, DFS)
 run_algorithm(maze_search, start, goal, A_star)
 run_algorithm(maze_search, start, goal, value_iteration)
 run_algorithm(maze_search, start, goal, policy_iteration)
