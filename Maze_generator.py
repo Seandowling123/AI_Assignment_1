@@ -24,7 +24,8 @@ def delete_all_maze_files():
     csv_files = [file for file in files if file.endswith('.csv') and file[0:4] == 'maze']
     for csv_file in csv_files:
         os.remove(csv_file)
-        
+
+# Print performance metrics for the algoritms
 def print_metrics(algo_name, path_length, nodes_searched, elapsed_time):
     print(f"{algo_name} Metrics:")
     print(f"  Path Length:   \t{path_length:}")
@@ -317,7 +318,7 @@ def get_highest_value_cell(cells, V):
             max_cell = cell
     return max_cell
 
-# Get the solve the maze from the cell values
+# Get the lowest cost path through the maze from the values
 def get_value_iteration_path(maze_map, V, start, goal):
     # Initialise variables
     current_pos =  start
@@ -334,17 +335,19 @@ def get_value_iteration_path(maze_map, V, start, goal):
         
 # Calculate the value for a cell with Bellman eq
 def bellman_eq(current_pos, neighbouring_cells, R, V, discount):
-    Q_values = []
+    V_values = []
+    # Reward for making to the goal
     if current_pos in R:
         cell_R = R[current_pos]
-        Q_values.append(cell_R)
+        V_values.append(cell_R)
     else:
+        # Discounted reward
         for cell in neighbouring_cells:
             cell_V = 0
             if cell in V:
                 cell_V = V[cell]
-            Q_values.append(discount*cell_V)
-    return max(Q_values)
+            V_values.append(discount*cell_V)
+    return max(V_values)
 
 # Solve the maze with value iteration
 def value_iteration(maze_map, start, goal):
@@ -365,6 +368,7 @@ def value_iteration(maze_map, start, goal):
         deltas = []
         old_V = V.copy()
         
+        # Update the value of each cell
         for cell in maze_map:
             neighbouring_cells = get_neighbouring_cells(maze_map, cell)
             V[cell] = bellman_eq(cell, neighbouring_cells, R, old_V, discount)
@@ -390,6 +394,7 @@ def initialise_policy(maze_map):
         policy[cell] = rand_direction
     return policy
 
+# Get the coordinates of the cell in a given direction
 def get_cell_from_direction(cell, direction):
     new_cell = (-1,-1)
     if direction == 'E':
@@ -407,8 +412,9 @@ def policy_evaluation(maze_map, policy, R, old_V, discount, goal):
     V = {}
     for cell in maze_map:
         cell_V = 0
-        
         neighbouring_cells = get_neighbouring_cells(maze_map, cell)
+        
+        # Special case for the goal
         if cell == goal:
             cell_V = R[cell]
         
@@ -423,12 +429,12 @@ def get_optimal_policy(cell, neighbouring_cells, policy, V):
     highest_V_cell = get_cell_from_direction(cell,policy[cell])
     highest_V = 0
     
+    # Set policy to go to the highest value cell
     for neigbouring_cell in neighbouring_cells:
         if neigbouring_cell in V:
             if V[neigbouring_cell] > highest_V:
                 highest_V = V[neigbouring_cell]
                 highest_V_cell = neigbouring_cell
-                #print(cell, to_directions([cell, highest_V_cell]))
     direction = to_directions([cell, highest_V_cell])
     return direction
 
@@ -440,11 +446,10 @@ def policy_improvement(maze_map, policy, V):
         new_policy[cell] = get_optimal_policy(cell, neighbouring_cells, policy, V)
     return new_policy
 
-# Check if two dista are equal
+# Check if two dicts are equal
 def dicts_equal(dict1, dict2):
     if set(dict1.keys()) != set(dict2.keys()):
         return False
-    
     for key in dict1.keys():
         if dict1[key] != dict2[key]:
             return False
@@ -452,11 +457,11 @@ def dicts_equal(dict1, dict2):
 
 # Get the solve the maze from the cell values
 def get_policy_iteration_path(start, goal, policy):
-    # Initialise variables
     current_pos =  start
     path = []
     path.append(current_pos)
-    # Travel along the path of highest value cells
+    
+    # Travel along the path of cell policies
     while current_pos != goal:
         next_cell = get_cell_from_direction(current_pos, policy[current_pos])
         current_pos = next_cell
@@ -519,7 +524,7 @@ def show_policy(m, policy):
         maze.tracePath({cell_agent:[(0,0)]}, delay=1, kill=False)
     maze.run()
 
-# Set variables
+# Set maze parameters
 size = (30,30)
 goal = (1,1)
 start = (30,30)
