@@ -602,13 +602,13 @@ if user_input == 'OTHER':
     print("Please enter an edge size for the maze. \nNote that sizes over 100 are not recomended.")
     while not user_input.isdigit():
         user_input = input()
-
-maze_sizes = {'S': (5,5),'M': (25,25),'L': (50,50)}
-maze_speeds = {'S': 250 ,'M': 50,'L': 25}
-maze_speed = int(maze_speed_eq(maze_sizes[user_input][0]))
+    size = (int(user_input),int(user_input))
+else:
+    maze_sizes = {'S': (5,5),'M': (25,25),'L': (50,50)}
+    size = maze_sizes[user_input]
 
 # Set maze parameters
-size = maze_sizes[user_input]
+maze_speed = int(maze_speed_eq(size[0]))
 goal = (1,1)
 start = (size[0],size[1])
 
