@@ -1,6 +1,7 @@
 from pyamaze import maze, agent, COLOR, textTitle
 from collections import Counter
 import random
+import math
 import time
 import os
 
@@ -579,11 +580,13 @@ def show_policy(m, policy):
         maze.tracePath({cell_agent:[(0,0)]}, delay=1, kill=False)
     maze.run()
     
+def maze_speed_eq(size):
+    return 150*math.e**(-0.0071*size)
     
 # Start procedure
 maze_options = {'S': '5x5','M': '25x25','L': '50x50'}
 user_input = 0
-while user_input not in list(maze_options.keys()):
+while user_input not in list(maze_options.keys()) and user_input != 'OTHER':
     # Print the maze sizes in a visually appealing format
     print("Please choose a maze size from the options below:")
     print("  ┌────────────┬────────────┐")
@@ -592,14 +595,20 @@ while user_input not in list(maze_options.keys()):
     for option, size in maze_options.items():
         print(f"  │     {option:<7}│   {size:<7}  │")
     print("  └────────────┴────────────┘")
+    print("Or type 'other' to enter a size not listed")
     user_input = (input()).upper()
+    
+if user_input == 'OTHER':
+    print("Please enter an edge size for the maze. \nNote that sizes over 100 are not recomended.")
+    while not user_input.isdigit():
+        user_input = input()
 
 maze_sizes = {'S': (5,5),'M': (25,25),'L': (50,50)}
 maze_speeds = {'S': 250 ,'M': 50,'L': 25}
-maze_speed = maze_speeds[user_input]
+maze_speed = int(maze_speed_eq(maze_sizes[user_input][0]))
 
 # Set maze parameters
-size = (maze_sizes[user_input])
+size = maze_sizes[user_input]
 goal = (1,1)
 start = (size[0],size[1])
 
@@ -611,7 +620,7 @@ maze_file = find_maze_file()
 textTitle(maze_search, "startup title", "")
 
 # Solve the maze with each algorithm
-#run_algorithm(maze_search, start, goal, BFS)
+run_algorithm(maze_search, start, goal, BFS)
 #run_algorithm(maze_search, start, goal, DFS)
 #run_algorithm(maze_search, start, goal, A_star)
 #run_algorithm(maze_search, start, goal, value_iteration)
