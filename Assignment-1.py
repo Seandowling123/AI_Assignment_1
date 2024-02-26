@@ -600,8 +600,10 @@ while user_input not in list(maze_options.keys()) and user_input != 'OTHER':
     
 if user_input == 'OTHER':
     print("Please enter an edge size for the maze. \nNote that sizes over 100 are not recomended.")
-    while not user_input.isdigit():
+    while not user_input.isdigit() or int(user_input) < 1:
         user_input = input()
+        if not user_input.isdigit() or int(user_input) < 1:
+            print("Please enter an integer value greater than 1")
     size = (int(user_input),int(user_input))
 else:
     maze_sizes = {'S': (5,5),'M': (25,25),'L': (50,50)}
