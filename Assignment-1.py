@@ -579,7 +579,8 @@ def show_policy(m, policy):
     for cell_agent in cell_agents:
         maze.tracePath({cell_agent:[(0,0)]}, delay=1, kill=False)
     maze.run()
-    
+
+# Function to calculate maze agent movement speed from maze size
 def maze_speed_eq(size):
     return 150*math.e**(-0.0071*size)
     
@@ -597,7 +598,8 @@ while user_input not in list(maze_options.keys()) and user_input != 'OTHER':
     print("  └────────────┴────────────┘")
     print("Or type 'other' to enter a size not listed")
     user_input = (input()).upper()
-    
+
+# Allow for custom sizes
 if user_input == 'OTHER':
     print("Please enter an edge size for the maze. \nNote that sizes over 100 are not recomended.")
     while not user_input.isdigit() or int(user_input) < 1:
