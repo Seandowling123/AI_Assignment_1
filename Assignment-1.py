@@ -286,7 +286,7 @@ def A_star(maze, start, goal):
     iterations = 0
     
     # While the goal has not been reached & the que is not empty
-    while(current_pos != goal):
+    while(current_pos != goal and (len(cell_costs) > 0)):
         iterations = iterations+1
         
         # Check neaby available cells
@@ -581,7 +581,7 @@ def show_policy(m, policy):
     
     
 # Start procedure
-maze_options = {'S': '5x5','M': '50x50','L': '100x100'}
+maze_options = {'S': '5x5','M': '25x25','L': '50x50'}
 user_input = 0
 while user_input not in list(maze_options.keys()):
     # Print the maze sizes in a visually appealing format
@@ -611,15 +611,15 @@ maze_file = find_maze_file()
 textTitle(maze_search, "startup title", "")
 
 # Solve the maze with each algorithm
-run_algorithm(maze_search, start, goal, BFS)
-run_algorithm(maze_search, start, goal, DFS)
-run_algorithm(maze_search, start, goal, A_star)
-run_algorithm(maze_search, start, goal, value_iteration)
+#run_algorithm(maze_search, start, goal, BFS)
+#run_algorithm(maze_search, start, goal, DFS)
+#run_algorithm(maze_search, start, goal, A_star)
+#run_algorithm(maze_search, start, goal, value_iteration)
 run_algorithm(maze_search, start, goal, policy_iteration)
 
 maze_search.run()
 
-show_cell_values(maze_search, value_iteration_values)
+#show_cell_values(maze_search, value_iteration_values)
 show_policy(maze_search, policy_iteration_values)
 
 delete_all_maze_files()
