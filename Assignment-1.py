@@ -605,8 +605,9 @@ start = (size[0],size[1])
 
 # Create maze for the search algorithms
 maze_search=maze(size[0],size[1])
-maze_search.CreateMaze(goal[0],goal[1],loopPercent=30,theme="dark", saveMaze=True)
+maze_search.CreateMaze(goal[0],goal[1],loopPercent=50,theme="dark", saveMaze=True)
 maze_file = find_maze_file()
+
 textTitle(maze_search, "startup title", "")
 
 # Solve the maze with each algorithm
