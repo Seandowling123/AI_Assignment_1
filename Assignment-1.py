@@ -624,7 +624,9 @@ def show_policy(m, policy):
 def maze_speed_eq(size):
     return 150*math.e**(-0.0071*size)
     
+#################
 # Start procedure
+#################
 maze_options = {'S': '5x5','M': '25x25','L': '50x50'}
 user_input = 0
 while user_input not in list(maze_options.keys()) and user_input != 'OTHER':
