@@ -275,7 +275,7 @@ def A_star(maze, start, goal):
     iterations = 0
     
     # While the goal has not been reached & the que is not empty
-    while(current_pos != goal and (len(cell_costs) > 0)):
+    while current_pos != goal:
         iterations = iterations+1
         
         # Check neaby available cells
@@ -619,8 +619,8 @@ run_algorithm(maze_search, start, goal, policy_iteration)
 
 maze_search.run()
 
-#show_cell_values(maze_search, value_iteration_values)
-#show_policy(maze_search, policy_iteration_values)
+show_cell_values(maze_search, value_iteration_values)
+show_policy(maze_search, policy_iteration_values)
 
 delete_all_maze_files()
     
