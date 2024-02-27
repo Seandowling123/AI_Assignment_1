@@ -60,12 +60,12 @@ def get_algo_stats(start, goal, search_func):
         
         for i in range(100):
             # Create maze for the search algorithms
-            maze_search=maze(size[0],size[1])
-            maze_search.CreateMaze(goal[0],goal[1],loopPercent=50,theme="dark", saveMaze=False)
+            my_maze=maze(size[0],size[1])
+            my_maze.CreateMaze(goal[0],goal[1],loopPercent=50,theme="dark", saveMaze=False)
 
             # Define the paths
             start_time = time.time()
-            algo_name, path, search = search_func(maze_search, start, goal)
+            algo_name, path, search = search_func(my_maze, start, goal)
             end_time = time.time()
             
             # Get performance metrics
@@ -659,23 +659,22 @@ goal = (1,1)
 start = (size[0],size[1])
 
 # Create maze for the search algorithms
-maze_search=maze(size[0],size[1])
-maze_search.CreateMaze(goal[0],goal[1],loopPercent=50,theme="dark", saveMaze=True)
+my_maze=maze(size[0],size[1])
+my_maze.CreateMaze(goal[0],goal[1],loopPercent=50,theme="dark", saveMaze=True)
 maze_file = find_maze_file()
-textTitle(maze_search, "startup title", "")
+textTitle(my_maze, "startup title", "")
 
 # Solve the maze with each algorithm
-run_algorithm(maze_search, start, goal, BFS)
-run_algorithm(maze_search, start, goal, DFS)
-run_algorithm(maze_search, start, goal, A_star)
-run_algorithm(maze_search, start, goal, value_iteration)
-run_algorithm(maze_search, start, goal, policy_iteration)
+run_algorithm(my_maze, start, goal, BFS)
+run_algorithm(my_maze, start, goal, DFS)
+run_algorithm(my_maze, start, goal, A_star)
+run_algorithm(my_maze, start, goal, value_iteration)
+run_algorithm(my_maze, start, goal, policy_iteration)
 
-maze_search.run()
+my_maze.run()
 
-show_cell_values(maze_search, value_iteration_values)
-show_policy(maze_search, policy_iteration_values)
+show_cell_values(my_maze, value_iteration_values)
+show_policy(my_maze, policy_iteration_values)
 
 delete_all_maze_files()
     
-   
