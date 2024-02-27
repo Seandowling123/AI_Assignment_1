@@ -40,7 +40,7 @@ def print_metrics(algo_name, path_length, nodes_searched, iterations, elapsed_ti
 # Print each algorithms metrtics (FOR REPORT ONLY)
 def print_stuff(metrics):
     titles = ["\\textbf{Path Length:}", "\\textbf{Nodes Searched:}", "\\textbf{Iterations:", "\\textbf{Elapsed Time:(s)}"]
-    print("METRICS\n")
+    print("METRICS")
     for i in range(len(metrics[0])):
         print(f"{titles[i]} & {metrics[0][i]} & {metrics[1][i]} & {metrics[2][i]}\\\\")
 
@@ -85,7 +85,7 @@ def get_algo_stats(start, goal, search_func):
             print(f"{i}\r", end='', flush=True)
             
         print(lengths)
-        metrics.append([np.mean(lengths), "N/A", np.mean(iterations_), np.mean(times)])
+        metrics.append([np.mean(lengths),np.mean(searches), np.mean(iterations_), np.mean(times)])
     print_stuff(metrics)
         
 # Display the maze being solved
@@ -104,6 +104,7 @@ def run_algorithm(maze, start, goal, search_func):
     elapsed_time = end_time - start_time
     if algo_name != "Value Iteration" and algo_name != "Policy Iteration":
         nodes_searched = len(search)
+        iterations = "N/A"
     metrics = [str(path_length), str(nodes_searched), iterations, "{:.4f}".format(elapsed_time)]
     print_metrics(algo_name, *metrics)
     
