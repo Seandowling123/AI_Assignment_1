@@ -36,7 +36,58 @@ def print_metrics(algo_name, path_length, nodes_searched, iterations, elapsed_ti
     print(f"  Nodes Searched:\t{nodes_searched:}")
     print(f"  Iterations:    \t{iterations:}")
     print(f"  Elapsed Time:  \t{elapsed_time:} seconds\n")
+    
+# Print each algorithms metrtics (FOR REPORT ONLY)
+def print_stuff(metrics):
+    titles = ["\\textbf{Path Length:}", "\\textbf{Nodes Searched:}", "\\textbf{Iterations:", "\\textbf{Elapsed Time:(s)}"]
+    print("METRICS\n")
+    for i in range(len(metrics[0])):
+        print(f"{titles[i]} & {metrics[0][i]} & {metrics[1][i]} & {metrics[2][i]}\\\\")
 
+# Get metrics for each algorithm (FOR REPORT ONLY)
+def get_algo_stats(start, goal, search_func):
+    goal = (1,1)
+    sizes = (5, 25, 50)
+    metrics = []
+    
+    for size1 in sizes:
+        size = (size1,size1)
+        lengths = []
+        searches = []
+        iterations_ = []
+        times = []
+        start = (size[0],size[1])
+        
+        for i in range(100):
+            # Create maze for the search algorithms
+            maze_search=maze(size[0],size[1])
+            maze_search.CreateMaze(goal[0],goal[1],loopPercent=50,theme="dark", saveMaze=False)
+
+            # Define the paths
+            start_time = time.time()
+            algo_name, path, search = search_func(maze_search, start, goal)
+            end_time = time.time()
+            
+            # Get performance metrics
+            nodes_searched = 'N/A'
+            path_length = len(path)
+            global num_iterations
+            iterations = num_iterations
+            num_iterations = 0
+            elapsed_time = end_time - start_time
+            if algo_name != "Value Iteration" and algo_name != "Policy Iteration":
+                nodes_searched = len(search)
+                
+            lengths.append(path_length)
+            searches.append(nodes_searched)
+            iterations_.append(int(iterations))
+            times.append(elapsed_time)
+            print(f"{i}\r", end='', flush=True)
+            
+        print(lengths)
+        metrics.append([np.mean(lengths), "N/A", np.mean(iterations_), np.mean(times)])
+    print_stuff(metrics)
+        
 # Display the maze being solved
 def run_algorithm(maze, start, goal, search_func):
     # Define the paths
@@ -611,6 +662,7 @@ maze_file = find_maze_file()
 
 textTitle(maze_search, "startup title", "")
 
+# Solve the maze with each algorithm
 run_algorithm(maze_search, start, goal, BFS)
 run_algorithm(maze_search, start, goal, DFS)
 run_algorithm(maze_search, start, goal, A_star)
