@@ -1,5 +1,6 @@
 from pyamaze import maze, agent, COLOR, textTitle
 from collections import Counter
+import numpy as np
 import random
 import math
 import time
@@ -35,7 +36,7 @@ def print_metrics(algo_name, path_length, nodes_searched, iterations, elapsed_ti
     print(f"  Nodes Searched:\t{nodes_searched:}")
     print(f"  Iterations:    \t{iterations:}")
     print(f"  Elapsed Time:  \t{elapsed_time:} seconds\n")
-        
+
 # Display the maze being solved
 def run_algorithm(maze, start, goal, search_func):
     # Define the paths
@@ -610,7 +611,6 @@ maze_file = find_maze_file()
 
 textTitle(maze_search, "startup title", "")
 
-# Solve the maze with each algorithm
 run_algorithm(maze_search, start, goal, BFS)
 run_algorithm(maze_search, start, goal, DFS)
 run_algorithm(maze_search, start, goal, A_star)
