@@ -188,35 +188,32 @@ def get_neighbouring_cells(maze_map, current_pos):
 # Solve the maze with BFS
 def BFS(maze, start, goal):
     maze_map = maze.maze_map
-    que = []
+    queue = []
     checked_cells = []
     prev_pos = {}
     
     # Initialise variables
     current_pos = start
     past_cells = [current_pos]
-    que = que + get_available_cells(maze_map, current_pos, checked_cells)
+    queue = queue + get_available_cells(maze_map, current_pos, checked_cells)
     iterations = 0
     
-    # While the goal has not been reached & the que is not empty
-    while((current_pos != goal) and (len(que) > 0)):
+    # While the goal has not been reached & the queue is not empty
+    while((current_pos != goal) and (len(queue) > 0)):
         iterations = iterations+1
         
         # Check neaby available cells
         checked_cells.append(current_pos)
         available_cells = get_available_cells(maze_map, current_pos, checked_cells)
-        que = que + available_cells
+        queue = queue + available_cells
         for cell in available_cells:
             prev_pos[cell] = current_pos
         
-        # Get next unchecked cell from the que
-        while que[0] in checked_cells:
-            del que[0]
-        current_pos = que[0]
+        # Get next unchecked cell from the queue
+        while queue[0] in checked_cells:
+            del queue[0]
+        current_pos = queue[0]
         past_cells.append(current_pos)
-        
-        if current_pos in checked_cells:
-            print("shit")
     
     global num_iterations
     num_iterations = iterations
@@ -238,32 +235,32 @@ def BFS(maze, start, goal):
 # Solve the maze with DFS
 def DFS(maze, start, goal):
     maze_map = maze.maze_map
-    que = []
+    queue = []
     checked_cells = []
     prev_pos = {}
     
     # Initialise variables
     current_pos = start
     past_cells = [current_pos]
-    que = que + get_available_cells(maze_map, current_pos, checked_cells)
+    queue = queue + get_available_cells(maze_map, current_pos, checked_cells)
     iterations = 0
     
-    # While the goal has not been reached & the que is not empty
-    while((current_pos != goal) and (len(que) > 0)):
+    # While the goal has not been reached & the queue is not empty
+    while((current_pos != goal) and (len(queue) > 0)):
         iterations = iterations+1
         
         # Check neaby available cells
         checked_cells.append(current_pos)
         available_cells = get_available_cells(maze_map, current_pos, checked_cells)
-        que = que + available_cells
+        queue = queue + available_cells
         for cell in available_cells:
             prev_pos[cell] = current_pos
         
-        # Get next unchecked cell from the que
-        while que[len(que)-1] in checked_cells:
-            del que[len(que)-1]
-        current_pos = que[len(que)-1]
-        del que[len(que)-1]
+        # Get next unchecked cell from the queue
+        while queue[len(queue)-1] in checked_cells:
+            del queue[len(queue)-1]
+        current_pos = queue[len(queue)-1]
+        del queue[len(queue)-1]
         past_cells.append(current_pos)
         
     global num_iterations
@@ -327,7 +324,7 @@ def A_star(maze, start, goal):
     cell_costs.update(get_cell_costs(available_cells, g_values, cell_costs, goal))
     iterations = 0
     
-    # While the goal has not been reached & the que is not empty
+    # While the goal has not been reached & the queue is not empty
     while current_pos != goal:
         iterations = iterations+1
         
@@ -343,7 +340,7 @@ def A_star(maze, start, goal):
         for cell in available_cells:
             prev_pos[cell] = current_pos
     
-        # Get next unchecked cell from the que
+        # Get next unchecked cell from the queue
         while get_lowest_cost_cell(cell_costs) in checked_cells:
             del cell_costs[get_lowest_cost_cell(cell_costs)]
         current_pos = get_lowest_cost_cell(cell_costs)
