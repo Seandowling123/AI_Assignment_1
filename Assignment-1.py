@@ -670,6 +670,7 @@ run_algorithm(my_maze, start, goal, policy_iteration)
 
 my_maze.run()
 
+# Show the converged value and policy oteration solutions
 show_cell_values(my_maze, value_iteration_values)
 show_policy(my_maze, policy_iteration_values)
 
